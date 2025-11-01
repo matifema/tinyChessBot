@@ -5,7 +5,7 @@ using System.Linq;
 using ChessChallenge.API;
 using ChessChallenge.Chess;
 
-namespace OctoBot.SelfPlay
+namespace OctoBot.SelfPlayApp
 {
     class Program
     {
@@ -34,8 +34,8 @@ namespace OctoBot.SelfPlay
         private readonly string outputFile;
         private readonly Random random;
         private readonly List<string> openings;
-        private readonly global::OctoBot bot1;
-        private readonly global::OctoBot bot2;
+        private readonly OctoBot bot1;
+        private readonly OctoBot bot2;
 
         public SelfPlayGenerator(string openingFile, string outputFile)
         {
@@ -43,8 +43,8 @@ namespace OctoBot.SelfPlay
             this.outputFile = outputFile;
             this.random = new Random();
             this.openings = LoadOpenings();
-            this.bot1 = new global::OctoBot();
-            this.bot2 = new global::OctoBot();
+            this.bot1 = new OctoBot();
+            this.bot2 = new OctoBot();
 
             // Clear output file
             File.WriteAllText(outputFile, "");
