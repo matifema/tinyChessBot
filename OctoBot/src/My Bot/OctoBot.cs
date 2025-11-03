@@ -518,6 +518,15 @@ public class OctoBot : IChessBot
                 score += 9000 + (int)m.PromotionPieceType * 100;
             }
             
+            // Penalize moves that leave pieces hanging
+            board.MakeMove(m);
+            if (board.SquareIsAttackedByOpponent(m.TargetSquare))
+            {
+                // Piece is attacked after move - penalize based on piece value
+                score -= (int)m.MovePieceType * 50;
+            }
+            board.UndoMove(m);
+            
             // Moves to safe squares
             if (!board.SquareIsAttackedByOpponent(m.TargetSquare))
             {
@@ -647,10 +656,44 @@ public class OctoBot : IChessBot
             return 0;
         }
 
+        // Evaluate hanging pieces (undefended pieces that are attacked)
+        foreach (PieceList pieceList in board.GetAllPieceLists())
+        {
+            bool isWhite = pieceList.IsWhitePieceList;
+            int colorMult = isWhite ? 1 : -1;
+            
+            foreach (Piece piece in pieceList)
+            {
+                // Skip pawns and kings for hanging piece detection
+                if (piece.IsPawn || piece.IsKing) continue;
+                
+                Square square = piece.Square;
+                
+                // Check if piece is attacked by opponent
+                if (board.SquareIsAttackedByOpponent(square))
+                {
+                    // Check if piece is defended by our pieces
+                    board.ForceSkipTurn();
+                    bool isDefended = board.SquareIsAttackedByOpponent(square);
+                    board.UndoSkipTurn();
+                    
+                    if (!isDefended)
+                    {
+                        // Hanging piece - penalize heavily
+                        score -= values[piece.PieceType] / 2 * colorMult;
+                    }
+                }
+            }
+        }
+
+        // Mobility evaluation - reward having more legal moves, penalize opponent mobility
         if (board.TrySkipTurn())
         {
-            score += (board.GetLegalMoves().Count() - nlegalMoves) * turn;
+            int opponentMoves = board.GetLegalMoves().Count();
             board.UndoSkipTurn();
+            
+            // Reward our mobility, penalize opponent mobility
+            score += (nlegalMoves - opponentMoves) * 5 * turn;
         }
 
         foreach (Piece piece in board.GetAllPieceLists().SelectMany(p => p))
