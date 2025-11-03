@@ -55,7 +55,7 @@ public class OctoBot : IChessBot
         };
 
     // Phase values for game phase calculation
-    private static readonly int[] PhaseValues = { 0, 1, 1, 2, 4, 0 }; // None, Knight, Bishop, Rook, Queen, King
+    private static readonly int[] PhaseValues = { 0, 1, 2, 3, 4, 5, 6 }; // None, Knight, Bishop, Rook, Queen, King
 
     // Middlegame Piece-Square Tables (PeSTO values)
     private static readonly int[] MgPawnTable = {

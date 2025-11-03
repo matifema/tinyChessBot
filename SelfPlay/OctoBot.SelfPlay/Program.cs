@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ChessChallenge.API;
-using ChessChallenge.Chess;
 
-namespace OctoBot.SelfPlayApp
+namespace SelfPlayApp
 {
     class Program
     {
