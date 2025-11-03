@@ -436,8 +436,8 @@ public class OctoBot : IChessBot
     // Quiescence search to avoid horizon effect
     private int QuiescenceSearch(int alpha, int beta, Board board)
     {
-        // Stand pat evaluation
-        int standPat = Eval(board, 0, new Move());
+        // Stand pat evaluation - use TaperedEval directly to avoid MoveEval with null move
+        int standPat = TaperedEval(board) + BoardEval(board, 0);
         
         if (board.IsInCheckmate())
         {
@@ -548,7 +548,7 @@ public class OctoBot : IChessBot
     //-------------------------------------------------------------------- EVALUATION
     private int Eval(Board board, int depth, Move move)
     {
-        return TaperedEval(board) + MoveEval(board, move, board.IsWhiteToMove);
+        return TaperedEval(board) + BoardEval(board, 0) + MoveEval(board, move, board.IsWhiteToMove);
     }
 
     private int TaperedEval(Board board)
@@ -592,9 +592,6 @@ public class OctoBot : IChessBot
 
         // Tapered evaluation: interpolate between middlegame and endgame
         int finalScore = (mgScore * gamePhase + egScore * (24 - gamePhase)) / 24;
-
-        // Additional positional factors
-        finalScore += BoardEval(board, 0);
 
         return finalScore;
     }
@@ -683,6 +680,12 @@ public class OctoBot : IChessBot
 
     private int MoveEval(Board board, Move lastmove, bool isWhitetoMove)
     {
+        // Safety check: if move is null/default, return 0
+        if (lastmove.IsNull || lastmove.MovePieceType == PieceType.None)
+        {
+            return 0;
+        }
+
         int turn = isWhitetoMove ? -1 : 1;
         int score = 0;
 
