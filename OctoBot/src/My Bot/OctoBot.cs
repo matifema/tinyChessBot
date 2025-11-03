@@ -280,7 +280,7 @@ public class OctoBot : IChessBot
             UpdateTreePath(rootNode, depth);
             return rootNode;
         }
-        var moves = PrioritizeMoves(board.GetLegalMoves(), boar);
+        var moves = PrioritizeMoves(board.GetLegalMoves(), board);
 
         if (board.IsWhiteToMove) // maximizing
         {

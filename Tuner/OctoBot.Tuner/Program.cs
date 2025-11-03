@@ -178,7 +178,7 @@ namespace OctoBot.Tuner
             int gamePhase = 0;
 
             int[] pieceValues = { 0, 100, 300, 300, 500, 900, 20000 };
-            int[] phaseValues = { 0, 1, 1, 2, 4, 0 };
+            int[] phaseValues = { 1, 2, 3, 4, 5, 6 };
 
             for (int pieceType = 1; pieceType <= 6; pieceType++)
             {
