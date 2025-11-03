@@ -129,6 +129,12 @@ namespace SelfPlayApp
 
         private (List<string> positions, string result) PlayGame(Random random, OctoBot bot1, OctoBot bot2)
         {
+            // Clear position caches before each game to prevent memory bloat
+            bot1.seenPositions.Clear();
+            bot1.hashPositions.Clear();
+            bot2.seenPositions.Clear();
+            bot2.hashPositions.Clear();
+
             // Select random opening
             string startFen = openings[random.Next(openings.Count)];
             ChessChallenge.API.Board board = ChessChallenge.API.Board.CreateBoardFromFEN(startFen);
@@ -140,6 +146,9 @@ namespace SelfPlayApp
             int adjudicationMoves = 5;
             int consecutiveHighEval = 0;
             int lastEval = 0;
+
+            // Reuse timer object for performance
+            ChessChallenge.API.Timer timer = new ChessChallenge.API.Timer(100, 100, 10000, 0);
 
             while (moveCount < maxMoves)
             {
@@ -161,12 +170,11 @@ namespace SelfPlayApp
                     return (positions, "1/2-1/2");
                 }
 
-                // Get bot move with small randomness
-                ChessChallenge.API.Timer timer = new ChessChallenge.API.Timer(10000, 10000, 100000, 0);
+                // Get bot move
                 Move move = board.IsWhiteToMove ? bot1.Think(board, timer) : bot2.Think(board, timer);
 
-                // Add small random perturbation (1 in 20 chance to pick random move)
-                if (random.Next(20) == 0 && legalMoves.Length > 1)
+                // Add small random perturbation (1 in 50 chance to pick random move)
+                if (random.Next(50) == 0 && legalMoves.Length > 1)
                 {
                     move = legalMoves[random.Next(legalMoves.Length)];
                 }

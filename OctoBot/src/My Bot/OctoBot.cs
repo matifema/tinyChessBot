@@ -191,7 +191,7 @@ public class OctoBot : IChessBot
         -53, -34, -21, -11, -28, -14, -24, -43
     };
 
-    Dictionary<ulong, int> seenPositions = new Dictionary<ulong, int>(); // positions table
+    public Dictionary<ulong, int> seenPositions = new Dictionary<ulong, int>(); // positions table
     public HashSet<ulong> hashPositions = new HashSet<ulong>();
     private int nNodes = 0;
 
@@ -253,16 +253,13 @@ public class OctoBot : IChessBot
             return board.GetLegalMoves()[0];
         }
 
-        int depth = 4;
+        // Reduced depth for fast self-play
+        int depth = 2;
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
             AlphaB(int.MinValue, int.MaxValue, board, i, tree);
-            //Console.WriteLine("info depth " + i + " score cp " + tree.eval + " time 0 nodes 42 nps 69 pv " + tree.move.ToString());
         }
-        //Console.WriteLine("GOOD " + tree.child.eval + "  " + tree.child.move);
-
-        //Logging("logresponsetime4.txt", tm.MillisecondsElapsedThisTurn + "," + board.GetLegalMoves().Count() + "\n");
 
         return tree.child.move;
     }
@@ -278,10 +275,12 @@ public class OctoBot : IChessBot
 
         if (depth == 0 || board.IsDraw() || board.IsInCheckmate())
         {
+            // Only evaluate at leaf nodes
+            rootNode.eval = Eval(board, depth, rootNode.move);
             UpdateTreePath(rootNode, depth);
             return rootNode;
         }
-        var moves = PrioritizeMoves(board.GetLegalMoves(), board);
+        var moves = PrioritizeMoves(board.GetLegalMoves(), boar);
 
         if (board.IsWhiteToMove) // maximizing
         {
@@ -298,8 +297,8 @@ public class OctoBot : IChessBot
                 }
                 var childDepth = depth - 1;
 
-                var eval = Eval(board, childDepth, move);
-                var child = new Node(rootNode, eval, move, board);
+                // Don't evaluate here - let recursion handle it at leaf nodes
+                var child = new Node(rootNode, 0, move, board);
                 this.nNodes++;
 
                 child = AlphaB(alpha, beta, board, childDepth, child); // recursive call for children
@@ -321,7 +320,7 @@ public class OctoBot : IChessBot
             }
 
             rootNode.child = max;
-            UpdateTreePath(rootNode, depth);
+            rootNode.eval = max.eval;
             return rootNode;
         }
         else // minimizing
@@ -339,8 +338,8 @@ public class OctoBot : IChessBot
                 }
                 var childDepth = depth-1;
 
-                var eval = Eval(board, childDepth, move);
-                var child = new Node(rootNode, eval, move, board);
+                // Don't evaluate here - let recursion handle it at leaf nodes
+                var child = new Node(rootNode, 0, move, board);
                 this.nNodes++;
 
                 child = AlphaB(alpha, beta, board, childDepth, child); // recursive call for children
@@ -361,7 +360,7 @@ public class OctoBot : IChessBot
                 board.UndoMove(move);
             }
             rootNode.child = min;
-            UpdateTreePath(rootNode, depth);
+            rootNode.eval = min.eval;
             return rootNode;
         }
 
@@ -379,18 +378,14 @@ public class OctoBot : IChessBot
         }
     }
 
-    private HashSet<Move> PrioritizeMoves(Move[] PossibleMoves, Board board)
+    private Move[] PrioritizeMoves(Move[] possibleMoves, Board board)
     {
-
-
-        var MoveSet = PossibleMoves.ToHashSet();
-
-        MoveSet.OrderBy(m => 
-            m.IsCapture ||
-            IsSquareWeak(board, m.TargetSquare) ||
-            m.IsPromotion);
-
-        return MoveSet;
+        // Simple MVV-LVA: captures first, then promotions, then moves to safe squares
+        return possibleMoves.OrderByDescending(m => 
+            (m.IsCapture ? 1000 : 0) + 
+            (m.IsPromotion ? 500 : 0) +
+            (!board.SquareIsAttackedByOpponent(m.TargetSquare) ? 100 : 0)
+        ).ToArray();
     }
 
     private bool IsSquareWeak(Board b, Square targetSquare)
