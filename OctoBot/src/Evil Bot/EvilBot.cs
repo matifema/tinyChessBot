@@ -1,4 +1,4 @@
-﻿using ChessChallenge.API;
+using ChessChallenge.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +37,7 @@ public class EvilBot : IChessBot
     private static string winPath = "..\\..\\..\\src\\My Bot\\pgn\\maps\\";
     private static string linuxPath = "src/My Bot/pgn/maps/";
 
+    private Random random = new Random();
 
     private static Dictionary<PieceType, (Dictionary<String, int>, Dictionary<String, int>)> positionalMaps =
         new Dictionary<PieceType, (Dictionary<String, int>, Dictionary<String, int>)>()
@@ -105,32 +106,26 @@ public class EvilBot : IChessBot
 
     public String Think(Board board, Move mv)
     {
-        int depth = 4;
-        N tree = new N();
-        tree.move = mv;
-        for (int i = 0; i < depth; i++) // iterative deepening
+        Move[] legalMoves = board.GetLegalMoves();
+        if (legalMoves.Length == 0)
         {
-            //AlphaB(int.MinValue, int.MaxValue, board, i, tree);
-            Console.WriteLine("info depth " + i + " score cp " + tree.eval + " time 0 nodes 42 nps 69 pv " + tree.move.ToString());
+            return "0000"; // No legal moves
         }
-
-        return tree.child.move.ToString();
+        
+        Move randomMove = legalMoves[random.Next(legalMoves.Length)];
+        return randomMove.ToString();
     }
+    
     public Move Think(Board board, Timer tm)
     {
-        if (board.GetLegalMoves().Count() == 1)
+        Move[] legalMoves = board.GetLegalMoves();
+        if (legalMoves.Length == 0)
         {
-            return board.GetLegalMoves()[0];
+            return Move.NullMove;
         }
-        int depth = 4;
-        N tree = new N();
-        for (int i = 0; i < depth; i++) // iterative deepening
-        {
-            AlphaB(int.MinValue, int.MaxValue, board, i, tree);
-            //Console.WriteLine("info depth " + i + " score cp " + tree.eval + " time 0 nodes 42 nps 69 pv " + tree.move.ToString());
-        }
-        //Console.WriteLine("EVIL " +tree.child.eval + "  " + tree.child.move);
-        return tree.child.move;
+        
+        // Return a random legal move
+        return legalMoves[random.Next(legalMoves.Length)];
     }
 
     private int MaterialEval(Board board, int depth)
@@ -271,7 +266,6 @@ public class EvilBot : IChessBot
 
                 var eval = BoardEval(board, depth - 1) + MoveEval(board, move, board.IsWhiteToMove) + MaterialEval(board, depth - 1);
                 var child = new N(rootNode, eval, move, board);
-                //Console.WriteLine("info depth " + depth + " score cp " + eval + " time 0 nodes 42 nps 69 pv e2e4");
 
                 AlphaB(alpha, beta, board, depth - 1, child); // recursive call for children
 
