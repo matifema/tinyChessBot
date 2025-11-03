@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ChessChallenge.API;
 
 namespace SelfPlayApp
@@ -17,8 +19,10 @@ namespace SelfPlayApp
             string outputFile = args.Length > 1 ? args[1] : "training_data.epd";
             string openingFile = "openings.epd";
 
+            int numCores = Environment.ProcessorCount;
             Console.WriteLine($"Target games: {numGames}");
             Console.WriteLine($"Output file: {outputFile}");
+            Console.WriteLine($"Using {numCores} CPU cores for parallel processing");
 
             var generator = new SelfPlayGenerator(openingFile, outputFile);
             generator.GenerateGames(numGames);
@@ -31,19 +35,17 @@ namespace SelfPlayApp
     {
         private readonly string openingFile;
         private readonly string outputFile;
-        private readonly Random random;
         private readonly List<string> openings;
-        private readonly OctoBot bot1;
-        private readonly OctoBot bot2;
+        private readonly object fileLock = new object();
+        private readonly object consoleLock = new object();
+        private int gamesCompleted = 0;
+        private int positionsCollected = 0;
 
         public SelfPlayGenerator(string openingFile, string outputFile)
         {
             this.openingFile = openingFile;
             this.outputFile = outputFile;
-            this.random = new Random();
             this.openings = LoadOpenings();
-            this.bot1 = new OctoBot();
-            this.bot2 = new OctoBot();
 
             // Clear output file
             File.WriteAllText(outputFile, "");
@@ -64,38 +66,68 @@ namespace SelfPlayApp
 
         public void GenerateGames(int numGames)
         {
-            int gamesCompleted = 0;
-            int positionsCollected = 0;
+            var startTime = DateTime.Now;
 
-            for (int i = 0; i < numGames; i++)
+            // Use Parallel.For to generate games concurrently
+            Parallel.For(0, numGames, new ParallelOptions 
+            { 
+                MaxDegreeOfParallelism = Environment.ProcessorCount 
+            }, 
+            i =>
             {
-                Console.Write($"\rPlaying game {i + 1}/{numGames}... ");
-
-                var (positions, result) = PlayGame();
+                // Each thread gets its own Random instance (seeded differently)
+                var threadRandom = new Random(Guid.NewGuid().GetHashCode());
                 
-                // Write positions to file
-                using (StreamWriter writer = File.AppendText(outputFile))
+                // Each thread gets its own bot instances to avoid shared state
+                var bot1 = new OctoBot();
+                var bot2 = new OctoBot();
+
+                var (positions, result) = PlayGame(threadRandom, bot1, bot2);
+                
+                // Thread-safe file writing
+                lock (fileLock)
                 {
-                    foreach (string fen in positions)
+                    using (StreamWriter writer = File.AppendText(outputFile))
                     {
-                        writer.WriteLine($"{fen}; {result};");
-                        positionsCollected++;
+                        foreach (string fen in positions)
+                        {
+                            writer.WriteLine($"{fen}; {result};");
+                            positionsCollected++;
+                        }
                     }
                 }
 
-                gamesCompleted++;
-
-                if ((i + 1)  % 10 == 0)
+                // Thread-safe progress reporting
+                int completed;
+                int collected;
+                lock (consoleLock)
                 {
-                    Console.WriteLine($"\nGames: {gamesCompleted}, Positions: {positionsCollected}");
-                }
-            }
+                    gamesCompleted++;
+                    completed = gamesCompleted;
+                    collected = positionsCollected;
 
+                    if (completed % 10 == 0)
+                    {
+                        var elapsed = DateTime.Now - startTime;
+                        double gamesPerSecond = completed / elapsed.TotalSeconds;
+                        var eta = TimeSpan.FromSeconds((numGames - completed) / gamesPerSecond);
+                        
+                        Console.WriteLine($"Games: {completed}/{numGames} ({completed * 100.0 / numGames:F1}%) | " +
+                                        $"Positions: {collected} | " +
+                                        $"Speed: {gamesPerSecond:F1} games/sec | " +
+                                        $"ETA: {eta:hh\\:mm\\:ss}");
+                    }
+                }
+            });
+
+            var totalTime = DateTime.Now - startTime;
             Console.WriteLine($"\n\nTotal games: {gamesCompleted}");
             Console.WriteLine($"Total positions: {positionsCollected}");
+            Console.WriteLine($"Total time: {totalTime:hh\\:mm\\:ss}");
+            Console.WriteLine($"Average speed: {gamesCompleted / totalTime.TotalSeconds:F2} games/sec");
         }
 
-        private (List<string> positions, string result) PlayGame()
+        private (List<string> positions, string result) PlayGame(Random random, OctoBot bot1, OctoBot bot2)
         {
             // Select random opening
             string startFen = openings[random.Next(openings.Count)];
