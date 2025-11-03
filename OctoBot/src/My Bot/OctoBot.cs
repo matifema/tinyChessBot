@@ -47,8 +47,8 @@ public class OctoBot : IChessBot
     // Piece values for material evaluation
     private Dictionary<PieceType, int> values = new Dictionary<PieceType, int>() {
             { PieceType.Pawn, 100 },
-            { PieceType.Bishop, 325 },
-            { PieceType.Knight, 300 },
+            { PieceType.Bishop, 330 },
+            { PieceType.Knight, 320 },
             { PieceType.Queen, 900 },
             { PieceType.Rook, 500 },
             { PieceType.King, 20000 }
@@ -635,7 +635,7 @@ public class OctoBot : IChessBot
     private int BoardEval(Board board, int depth)
     {
         int score = 0;
-        int turn = board.IsWhiteToMove ? -1 : 1;
+        int turn = board.IsWhiteToMove ? 1 : -1;
         List<Move> gameHistory = board.GameMoveHistory.ToList();
         int nlegalMoves = board.GetLegalMoves().Count();
 
@@ -645,7 +645,7 @@ public class OctoBot : IChessBot
         }
         if (board.IsInCheckmate())
         {
-            score += 999999999 * turn;
+            score = -999999999 * turn;
             seenPositions.TryAdd(board.ZobristKey, score);
             return score;       
         }
@@ -682,9 +682,20 @@ public class OctoBot : IChessBot
                         // Hanging piece - penalize heavily
                         score -= values[piece.PieceType] / 2 * colorMult;
                     }
+                    else
+                    {
+                        // Piece is attacked but defended - small penalty for tension
+                        score -= 10 * colorMult;
+                    }
                 }
             }
         }
+
+        // Pawn structure evaluation
+        score += EvaluatePawnStructure(board);
+
+        // King safety evaluation
+        score += EvaluateKingSafety(board);
 
         // Mobility evaluation - reward having more legal moves, penalize opponent mobility
         if (board.TrySkipTurn())
@@ -693,30 +704,184 @@ public class OctoBot : IChessBot
             board.UndoSkipTurn();
             
             // Reward our mobility, penalize opponent mobility
-            score += (nlegalMoves - opponentMoves) * 5 * turn;
+            score += (nlegalMoves - opponentMoves) * 3 * turn;
         }
 
+        // Piece activity (attacks)
         foreach (Piece piece in board.GetAllPieceLists().SelectMany(p => p))
         {
-            if (piece.IsPawn)
-            {
-                score += piece.IsWhite ? piece.Square.File : -7-piece.Square.File;
-            }
+            int colorMult = piece.IsWhite ? 1 : -1;
             
             int attackValue = BitboardHelper.GetNumberOfSetBits(
                 BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite));
 
-            score += attackValue * (piece.IsWhite ? 1 : -1);
+            score += attackValue * 2 * colorMult;
         }
 
+        // Penalize move repetition when ahead
         if (gameHistory.Count >= 3 && 
-            gameHistory[^3].TargetSquare.Equals(gameHistory.Last().StartSquare) && 
-            Math.Sign(score) == Math.Sign(turn))
+            gameHistory[^3].TargetSquare.Equals(gameHistory.Last().StartSquare))
         {
-            score += -5 * turn;
+            // If we're ahead, penalize repetition
+            if (Math.Sign(score) == turn)
+            {
+                score -= 30 * turn;
+            }
         }
 
         seenPositions.TryAdd(board.ZobristKey, score);
+        return score;
+    }
+
+    private int EvaluatePawnStructure(Board board)
+    {
+        int score = 0;
+        
+        PieceList whitePawns = board.GetPieceList(PieceType.Pawn, true);
+        PieceList blackPawns = board.GetPieceList(PieceType.Pawn, false);
+        
+        // Evaluate white pawns
+        bool[] whiteFiles = new bool[8];
+        foreach (Piece pawn in whitePawns)
+        {
+            int file = pawn.Square.File;
+            int rank = pawn.Square.Rank;
+            
+            // Doubled pawns penalty
+            if (whiteFiles[file])
+            {
+                score -= 15;
+            }
+            whiteFiles[file] = true;
+            
+            // Isolated pawns penalty
+            bool hasNeighbor = false;
+            if (file > 0 && whiteFiles[file - 1]) hasNeighbor = true;
+            if (file < 7 && whiteFiles[file + 1]) hasNeighbor = true;
+            if (!hasNeighbor && rank > 1)
+            {
+                score -= 10;
+            }
+            
+            // Passed pawn bonus
+            bool isPassed = true;
+            for (int f = Math.Max(0, file - 1); f <= Math.Min(7, file + 1); f++)
+            {
+                foreach (Piece blackPawn in blackPawns)
+                {
+                    if (blackPawn.Square.File == f && blackPawn.Square.Rank < rank)
+                    {
+                        isPassed = false;
+                        break;
+                    }
+                }
+            }
+            if (isPassed && rank > 3)
+            {
+                score += (rank - 3) * 15;
+            }
+        }
+        
+        // Evaluate black pawns
+        bool[] blackFiles = new bool[8];
+        foreach (Piece pawn in blackPawns)
+        {
+            int file = pawn.Square.File;
+            int rank = pawn.Square.Rank;
+            
+            // Doubled pawns penalty
+            if (blackFiles[file])
+            {
+                score += 15;
+            }
+            blackFiles[file] = true;
+            
+            // Isolated pawns penalty
+            bool hasNeighbor = false;
+            if (file > 0 && blackFiles[file - 1]) hasNeighbor = true;
+            if (file < 7 && blackFiles[file + 1]) hasNeighbor = true;
+            if (!hasNeighbor && rank < 6)
+            {
+                score += 10;
+            }
+            
+            // Passed pawn bonus
+            bool isPassed = true;
+            for (int f = Math.Max(0, file - 1); f <= Math.Min(7, file + 1); f++)
+            {
+                foreach (Piece whitePawn in whitePawns)
+                {
+                    if (whitePawn.Square.File == f && whitePawn.Square.Rank > rank)
+                    {
+                        isPassed = false;
+                        break;
+                    }
+                }
+            }
+            if (isPassed && rank < 4)
+            {
+                score -= (4 - rank) * 15;
+            }
+        }
+        
+        return score;
+    }
+
+    private int EvaluateKingSafety(Board board)
+    {
+        int score = 0;
+        
+        Square whiteKing = board.GetKingSquare(true);
+        Square blackKing = board.GetKingSquare(false);
+        
+        // Pawn shield bonus (pawns in front of king)
+        int whiteShield = 0;
+        int blackShield = 0;
+        
+        PieceList whitePawns = board.GetPieceList(PieceType.Pawn, true);
+        PieceList blackPawns = board.GetPieceList(PieceType.Pawn, false);
+        
+        foreach (Piece pawn in whitePawns)
+        {
+            int fileDist = Math.Abs(pawn.Square.File - whiteKing.File);
+            int rankDist = pawn.Square.Rank - whiteKing.Rank;
+            
+            if (fileDist <= 1 && rankDist > 0 && rankDist <= 2)
+            {
+                whiteShield += 15;
+            }
+        }
+        
+        foreach (Piece pawn in blackPawns)
+        {
+            int fileDist = Math.Abs(pawn.Square.File - blackKing.File);
+            int rankDist = blackKing.Rank - pawn.Square.Rank;
+            
+            if (fileDist <= 1 && rankDist > 0 && rankDist <= 2)
+            {
+                blackShield += 15;
+            }
+        }
+        
+        score += whiteShield - blackShield;
+        
+        // Penalty for king in center during middlegame
+        int totalPieces = board.GetAllPieceLists().Sum(pl => pl.Count);
+        if (totalPieces > 12) // Middlegame
+        {
+            int whiteKingFile = whiteKing.File;
+            int blackKingFile = blackKing.File;
+            
+            if (whiteKingFile >= 2 && whiteKingFile <= 5)
+            {
+                score -= 20;
+            }
+            if (blackKingFile >= 2 && blackKingFile <= 5)
+            {
+                score += 20;
+            }
+        }
+        
         return score;
     }
 
@@ -728,17 +893,26 @@ public class OctoBot : IChessBot
             return 0;
         }
 
-        int turn = isWhitetoMove ? -1 : 1;
+        int turn = isWhitetoMove ? 1 : -1;
         int score = 0;
 
+        // Castling bonus
+        if (lastmove.IsCastles)
+        {
+            score += 50 * turn;
+        }
+        
+        // Bonus for maintaining castling rights
         if (board.HasKingsideCastleRight(isWhitetoMove) || board.HasQueensideCastleRight(isWhitetoMove))
         {
-            score += turn;
+            score += 5 * turn;
         }
+        
+        // Penalty for moving same piece repeatedly
         if (board.GameMoveHistory.Count() > 3 && 
             board.GameMoveHistory[^3].TargetSquare.Equals(lastmove.StartSquare))
         {
-            score += values[lastmove.MovePieceType]/100 * turn;
+            score -= values[lastmove.MovePieceType] / 20 * turn;
         }
 
         return score;
