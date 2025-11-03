@@ -267,8 +267,7 @@ public class OctoBot : IChessBot
             return legalMoves[0];
         }
 
-        // Increased depth from 2 to 3 for better play
-        int depth = 3;
+        int depth = 5;
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
