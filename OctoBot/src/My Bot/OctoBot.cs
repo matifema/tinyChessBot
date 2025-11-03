@@ -193,6 +193,13 @@ public class OctoBot : IChessBot
 
     public Dictionary<ulong, int> seenPositions = new Dictionary<ulong, int>(); // positions table
     public HashSet<ulong> hashPositions = new HashSet<ulong>();
+    
+    // Transposition table for storing previously evaluated positions
+    private Dictionary<ulong, (int depth, int eval, int flag)> transpositionTable = new Dictionary<ulong, (int, int, int)>();
+    private const int TT_EXACT = 0;
+    private const int TT_ALPHA = 1;
+    private const int TT_BETA = 2;
+    
     private int nNodes = 0;
 
 
@@ -253,8 +260,8 @@ public class OctoBot : IChessBot
             return board.GetLegalMoves()[0];
         }
 
-        // Reduced depth for fast self-play
-        int depth = 2;
+        // Increased depth from 2 to 3 for better play
+        int depth = 3;
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
@@ -272,19 +279,49 @@ public class OctoBot : IChessBot
 
     private Node AlphaB(int alpha, int beta, Board board, int depth, Node rootNode)
     {
-
-        if (depth == 0 || board.IsDraw() || board.IsInCheckmate())
+        ulong zobristKey = board.ZobristKey;
+        
+        // Check transposition table
+        if (transpositionTable.TryGetValue(zobristKey, out var ttEntry) && ttEntry.depth >= depth)
         {
-            // Only evaluate at leaf nodes
+            if (ttEntry.flag == TT_EXACT)
+            {
+                rootNode.eval = ttEntry.eval;
+                return rootNode;
+            }
+            else if (ttEntry.flag == TT_ALPHA && ttEntry.eval <= alpha)
+            {
+                rootNode.eval = alpha;
+                return rootNode;
+            }
+            else if (ttEntry.flag == TT_BETA && ttEntry.eval >= beta)
+            {
+                rootNode.eval = beta;
+                return rootNode;
+            }
+        }
+
+        if (depth == 0)
+        {
+            // Use quiescence search instead of static eval at depth 0
+            rootNode.eval = QuiescenceSearch(alpha, beta, board);
+            UpdateTreePath(rootNode, depth);
+            return rootNode;
+        }
+
+        if (board.IsDraw() || board.IsInCheckmate())
+        {
             rootNode.eval = Eval(board, depth, rootNode.move);
             UpdateTreePath(rootNode, depth);
             return rootNode;
         }
+
         var moves = PrioritizeMoves(board.GetLegalMoves(), board);
 
         if (board.IsWhiteToMove) // maximizing
         {
             Node max = new Node(rootNode, int.MinValue, new Move(), board);
+            int originalAlpha = alpha;
 
             foreach (Move move in moves)
             {
@@ -297,11 +334,10 @@ public class OctoBot : IChessBot
                 }
                 var childDepth = depth - 1;
 
-                // Don't evaluate here - let recursion handle it at leaf nodes
                 var child = new Node(rootNode, 0, move, board);
                 this.nNodes++;
 
-                child = AlphaB(alpha, beta, board, childDepth, child); // recursive call for children
+                child = AlphaB(alpha, beta, board, childDepth, child);
 
                 if(child.eval > max.eval)
                 {
@@ -313,7 +349,7 @@ public class OctoBot : IChessBot
                 if (beta <= alpha)
                 {
                     board.UndoMove(move);
-                    break;
+                    break; // Beta cutoff
                 }
 
                 board.UndoMove(move);
@@ -321,11 +357,17 @@ public class OctoBot : IChessBot
 
             rootNode.child = max;
             rootNode.eval = max.eval;
+            
+            // Store in transposition table
+            int flag = max.eval <= originalAlpha ? TT_ALPHA : (max.eval >= beta ? TT_BETA : TT_EXACT);
+            transpositionTable[zobristKey] = (depth, max.eval, flag);
+            
             return rootNode;
         }
         else // minimizing
         {
             Node min = new Node(rootNode, int.MaxValue, new Move(), board);
+            int originalBeta = beta;
 
             foreach (Move move in moves)
             {
@@ -338,11 +380,10 @@ public class OctoBot : IChessBot
                 }
                 var childDepth = depth-1;
 
-                // Don't evaluate here - let recursion handle it at leaf nodes
                 var child = new Node(rootNode, 0, move, board);
                 this.nNodes++;
 
-                child = AlphaB(alpha, beta, board, childDepth, child); // recursive call for children
+                child = AlphaB(alpha, beta, board, childDepth, child);
 
                 if (child.eval < min.eval)
                 {
@@ -354,16 +395,76 @@ public class OctoBot : IChessBot
                 if (beta <= alpha)
                 {
                     board.UndoMove(move);
-                    break;
+                    break; // Alpha cutoff
                 }
 
                 board.UndoMove(move);
             }
+            
             rootNode.child = min;
             rootNode.eval = min.eval;
+            
+            // Store in transposition table
+            int flag = min.eval >= originalBeta ? TT_BETA : (min.eval <= alpha ? TT_ALPHA : TT_EXACT);
+            transpositionTable[zobristKey] = (depth, min.eval, flag);
+            
             return rootNode;
         }
+    }
 
+    // Quiescence search to avoid horizon effect
+    private int QuiescenceSearch(int alpha, int beta, Board board)
+    {
+        // Stand pat evaluation
+        int standPat = Eval(board, 0, new Move());
+        
+        if (board.IsInCheckmate())
+        {
+            return board.IsWhiteToMove ? int.MinValue + 1 : int.MaxValue - 1;
+        }
+        
+        if (board.IsDraw())
+        {
+            return 0;
+        }
+
+        if (standPat >= beta)
+        {
+            return beta;
+        }
+        
+        if (alpha < standPat)
+        {
+            alpha = standPat;
+        }
+
+        // Only search captures and promotions
+        Move[] captureMoves = board.GetLegalMoves(true);
+        
+        // Sort captures by MVV-LVA
+        var sortedCaptures = captureMoves.OrderByDescending(m => 
+            (m.IsCapture ? 1000 + (int)m.CapturePieceType * 10 - (int)m.MovePieceType : 0) +
+            (m.IsPromotion ? 900 : 0)
+        ).ToArray();
+
+        foreach (Move move in sortedCaptures)
+        {
+            board.MakeMove(move);
+            int score = -QuiescenceSearch(-beta, -alpha, board);
+            board.UndoMove(move);
+
+            if (score >= beta)
+            {
+                return beta;
+            }
+            
+            if (score > alpha)
+            {
+                alpha = score;
+            }
+        }
+
+        return alpha;
     }
 
     private void UpdateTreePath(Node node, int depth)
@@ -374,18 +475,45 @@ public class OctoBot : IChessBot
         }
         if (node.parent != null)
         {
-            UpdateTreePath(node.parent, depth); // recursively update the parent node
+            UpdateTreePath(node.parent, depth);
         }
     }
 
     private Move[] PrioritizeMoves(Move[] possibleMoves, Board board)
     {
-        // Simple MVV-LVA: captures first, then promotions, then moves to safe squares
+        // Enhanced move ordering: MVV-LVA for captures, then promotions, then safe moves
         return possibleMoves.OrderByDescending(m => 
-            (m.IsCapture ? 1000 : 0) + 
-            (m.IsPromotion ? 500 : 0) +
-            (!board.SquareIsAttackedByOpponent(m.TargetSquare) ? 100 : 0)
-        ).ToArray();
+        {
+            int score = 0;
+            
+            // Captures: victim value - attacker value
+            if (m.IsCapture)
+            {
+                score += 10000 + (int)m.CapturePieceType * 100 - (int)m.MovePieceType;
+            }
+            
+            // Promotions
+            if (m.IsPromotion)
+            {
+                score += 9000 + (int)m.PromotionPieceType * 100;
+            }
+            
+            // Moves to safe squares
+            if (!board.SquareIsAttackedByOpponent(m.TargetSquare))
+            {
+                score += 100;
+            }
+            
+            // Center control bonus
+            int file = m.TargetSquare.File;
+            int rank = m.TargetSquare.Rank;
+            if (file >= 2 && file <= 5 && rank >= 2 && rank <= 5)
+            {
+                score += 50;
+            }
+            
+            return score;
+        }).ToArray();
     }
 
     private bool IsSquareWeak(Board b, Square targetSquare)
@@ -487,24 +615,24 @@ public class OctoBot : IChessBot
 
         if (hashPositions.Contains(board.ZobristKey))
         {
-            return seenPositions[board.ZobristKey];     // posizione gia vista
+            return seenPositions[board.ZobristKey];
         }
         if (board.IsInCheckmate())
         {
             score += 999999999 * turn;
-            seenPositions.TryAdd(board.ZobristKey, score);  // checkmate
+            seenPositions.TryAdd(board.ZobristKey, score);
             return score;       
         }
 
         if (board.IsDraw())
         {
-            seenPositions.TryAdd(board.ZobristKey, 0);      // patta
+            seenPositions.TryAdd(board.ZobristKey, 0);
             return 0;
         }
 
         if (board.TrySkipTurn())
         {
-            score += (board.GetLegalMoves().Count() - nlegalMoves) * turn;    // maximize moves e minimizza moves nemico
+            score += (board.GetLegalMoves().Count() - nlegalMoves) * turn;
             board.UndoSkipTurn();
         }
 
@@ -516,7 +644,7 @@ public class OctoBot : IChessBot
             }
             
             int attackValue = BitboardHelper.GetNumberOfSetBits(
-                BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite));   // attacchi possibili pezzi
+                BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite));
 
             score += attackValue * (piece.IsWhite ? 1 : -1);
         }
@@ -525,7 +653,7 @@ public class OctoBot : IChessBot
             gameHistory[^3].TargetSquare.Equals(gameHistory.Last().StartSquare) && 
             Math.Sign(score) == Math.Sign(turn))
         {
-            score += -5 * turn;         // ripetizione se sei in vantaggio = male
+            score += -5 * turn;
         }
 
         seenPositions.TryAdd(board.ZobristKey, score);
@@ -539,10 +667,10 @@ public class OctoBot : IChessBot
 
         if (board.HasKingsideCastleRight(isWhitetoMove) || board.HasQueensideCastleRight(isWhitetoMove))
         {
-            score += turn; // incentivo castle
+            score += turn;
         }
         if (board.GameMoveHistory.Count() > 3 && 
-            board.GameMoveHistory[^3].TargetSquare.Equals(lastmove.StartSquare)) // one move rule
+            board.GameMoveHistory[^3].TargetSquare.Equals(lastmove.StartSquare))
         {
             score += values[lastmove.MovePieceType]/100 * turn;
         }
@@ -556,8 +684,8 @@ public class OctoBot : IChessBot
     //-------------------------------------------------------------------- LOGGING
     private void Logging(string filename, string log)
     {
-        File.AppendAllText("C:\\Users\\usr\\source\\repos\\tinyChessBot\\Chess-Challenge\\src\\My Bot\\logs\\" + filename, log); // finestre
-        //File.AppendAllText("/home/hos/Desktop/proj/tinyChessBot/Chess-Challenge/src/My Bot/" + filename, log);    // linux
+        File.AppendAllText("C:\\Users\\usr\\source\\repos\\tinyChessBot\\Chess-Challenge\\src\\My Bot\\logs\\" + filename, log);
+        //File.AppendAllText("/home/hos/Desktop/proj/tinyChessBot/Chess-Challenge/src/My Bot/" + filename, log);
     }
 
 }
