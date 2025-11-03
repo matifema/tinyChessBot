@@ -255,9 +255,16 @@ public class OctoBot : IChessBot
     }
     public Move Think(Board board, Timer tm)
     {
-        if (board.GetLegalMoves().Count() == 1)
+        Move[] legalMoves = board.GetLegalMoves();
+        
+        if (legalMoves.Length == 0)
         {
-            return board.GetLegalMoves()[0];
+            return Move.NullMove;
+        }
+        
+        if (legalMoves.Length == 1)
+        {
+            return legalMoves[0];
         }
 
         // Increased depth from 2 to 3 for better play
@@ -265,7 +272,13 @@ public class OctoBot : IChessBot
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
-            AlphaB(int.MinValue, int.MaxValue, board, i, tree);
+            AlphaB(int.Min Value, int.MaxValue, board, i, tree);
+        }
+
+        // Safety check: if tree.child is null, return first legal move
+        if (tree.child == null || tree.child.move.IsNull)
+        {
+            return legalMoves[0];
         }
 
         return tree.child.move;
@@ -317,6 +330,14 @@ public class OctoBot : IChessBot
         }
 
         var moves = PrioritizeMoves(board.GetLegalMoves(), board);
+        
+        // Safety check: if no legal moves, evaluate position
+        if (moves.Length == 0)
+        {
+            rootNode.eval = Eval(board, depth, rootNode.move);
+            UpdateTreePath(rootNode, depth);
+            return rootNode;
+        }
 
         if (board.IsWhiteToMove) // maximizing
         {
