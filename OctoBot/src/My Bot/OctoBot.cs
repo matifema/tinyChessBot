@@ -272,7 +272,7 @@ public class OctoBot : IChessBot
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
-            AlphaB(int.Min Value, int.MaxValue, board, i, tree);
+            AlphaB(int.MinValue, int.MaxValue, board, i, tree);
         }
 
         // Safety check: if tree.child is null, return first legal move
