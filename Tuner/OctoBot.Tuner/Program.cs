@@ -154,7 +154,7 @@ namespace OctoBot.Tuner
 
             foreach (var pos in positions)
             {
-                ChessChallenge.API.Board board = ChessChallenge.API.Board.CreateBoardFromFEN(pos.Fen);
+                ChessChallenge.API.Board board = ChessChallenge.API.Board.Create BoardFromFEN(pos.Fen);
                 double eval = EvaluatePosition(board);
                 double sigmoid = Sigmoid(eval);
                 double error = Math.Pow(pos.Result - sigmoid, 2);
@@ -178,7 +178,8 @@ namespace OctoBot.Tuner
             int gamePhase = 0;
 
             int[] pieceValues = { 0, 100, 300, 300, 500, 900, 20000 };
-            int[] phaseValues = { 1, 2, 3, 4, 5, 6 };
+            // Phase values indexed by PieceType enum: None=0, Pawn=1, Knight=2, Bishop=3, Rook=4, Queen=5, King=6
+            int[] phaseValues = { 0, 0, 1, 1, 2, 4, 0 };
 
             for (int pieceType = 1; pieceType <= 6; pieceType++)
             {
