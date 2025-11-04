@@ -203,8 +203,6 @@ public class OctoBot : IChessBot
     private int nNodes = 0;
 
 
-
-
     //-------------------------------------------------------------------- START THINK
     public void CliThink(string fen, string[] moves)
     {
@@ -267,7 +265,7 @@ public class OctoBot : IChessBot
             return legalMoves[0];
         }
 
-        int depth = 5;
+        int depth = 3;
         Node tree = new Node();
         for (int i = 0; i < depth; i++) // iterative deepening
         {
@@ -328,7 +326,7 @@ public class OctoBot : IChessBot
             return rootNode;
         }
 
-        var moves = PrioritizeMoves(board.GetLegalMoves(), board);
+        var moves = board.GetLegalMoves();
         
         // Safety check: if no legal moves, evaluate position
         if (moves.Length == 0)

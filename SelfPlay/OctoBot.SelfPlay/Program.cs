@@ -15,7 +15,7 @@ namespace SelfPlayApp
             Console.WriteLine("OctoBot Self-Play Data Generator");
             Console.WriteLine("=================================");
 
-            int numGames = args.Length > 0 ? int.Parse(args[0]) : 1000;
+            int numGames = args.Length > 0 ? int.Parse(args[0]) : 1000000;
             string outputFile = args.Length > 1 ? args[1] : "training_data.epd";
             string openingFile = "openings.epd";
 
