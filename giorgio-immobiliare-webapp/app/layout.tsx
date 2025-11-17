@@ -1,13 +1,12 @@
-// app/layout.tsx
 import "./globals.css";
 import AuthProvider from "./AuthProvider";
 import Footer from "./Footer";
 import Header from "./Header";
 
 export const metadata = {
-  title: "Giorgio Immobiliare",
+  title: "Giorgio Immobiliare - Agenzia Immobiliare Cerenova",
   description:
-    "Agenzia Immobiliare Giorgio Immobiliare - Cerenova - Cerveteri (Roma)",
+    "Agenzia Immobiliare Giorgio Immobiliare - Cerenova - Cerveteri (Roma). Vendita e affitto di appartamenti, ville, casali e terreni.",
 };
 
 export default function RootLayout({
@@ -17,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it" className="h-full">
-      <body className="h-full overflow-hidden">
+      <body className="h-full overflow-hidden bg-gray-50">
         <AuthProvider>
           <div className="min-h-screen flex flex-col">
             <Header />
