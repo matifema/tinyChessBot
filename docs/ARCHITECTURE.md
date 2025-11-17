@@ -1,6 +1,6 @@
 # Application Architecture
 
-This document outlines the architecture of the GiorgioImmobiliare website, built with Next.js 14 and deployed on Vercel.
+This document outlines the architecture of the GiorgioImmobiliare website, built with Next.js 16 and deployed on Vercel.
 
 ## 1. Core Philosophy
 
@@ -8,7 +8,7 @@ The architecture prioritizes simplicity, performance, and maintainability. It le
 
 ## 2. Technology Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Database**: Vercel Postgres
 - **Authentication**: NextAuth.js
 - **UI**: shadcn/ui with Tailwind CSS

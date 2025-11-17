@@ -1,10 +1,10 @@
 # GiorgioImmobiliare Website
 
-This is the official website for the GiorgioImmobiliare real estate agency. It serves as a public-facing platform for users to view property listings and as an internal tool for the agent to manage these listings.
+This is the official website for the GiorgioImmobiliare real estate agency, presented entirely in Italian. It serves as a public-facing platform for users to view property listings and as an internal tool for the agent to manage these listings.
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) 14 (App Router)
+- **Framework**: [Next.js](https://nextjs.org/) 16 (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Database**: [Vercel Postgres](https://vercel.com/storage/postgres)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org/) (for Admin Panel)

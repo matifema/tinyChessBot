@@ -22,7 +22,7 @@ This is the primary table that stores all property listing information.
 ```sql
 -- Custom ENUM types for status and property type
 CREATE TYPE listing_status AS ENUM ('for_sale', 'for_rent', 'sold', 'rented');
-CREATE TYPE property_type AS ENUM ('apartment', 'villa', 'house', 'office');
+CREATE TYPE property_type AS ENUM ('appartamento', 'villa', 'casale', 'terreno', 'box');
 
 -- The main listings table
 CREATE TABLE listings (
@@ -57,7 +57,7 @@ CREATE INDEX idx_listings_location ON listings(location);
 | `location`      | `VARCHAR(255)`       | The city or area where the property is located (e.g., "Cerenova").          |
 | `price`         | `NUMERIC(12, 2)`     | The price of the property. For rentals, this is the monthly rate.           |
 | `status`        | `listing_status`     | The current status of the listing (`for_sale`, `for_rent`, `sold`, `rented`). |
-| `property_type` | `property_type`      | The type of property (`apartment`, `villa`, `house`, `office`).               |
+| `property_type` | `property_type`      | The type of property (`appartamento`, `villa`, `casale`, `terreno`, `box`).   |
 | `bedrooms`      | `INT`                | The number of bedrooms.                                                     |
 | `bathrooms`     | `INT`                | The number of bathrooms.                                                    |
 | `square_meters` | `INT`                | The total area of the property in square meters.                            |
