@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ImageGallery from "@/app/components/ImageGallery";
-import { use } from "react";
 
 interface ListingPageProps {
   params: {
@@ -10,9 +9,10 @@ interface ListingPageProps {
 }
 
 export default async function ListingPage({ params }: ListingPageProps) {
-  // HACK: With Turbopack, `params` can be a promise. `React.use` unwraps it.
+  // HACK: With Turbopack, `params` can be a promise. Await unwraps it.
   // The cast is necessary because the defined prop type is a plain object.
-  const { id } = use(params as unknown as Promise<{ id: string }>);
+  const resolvedParams = await (params as unknown as Promise<{ id: string }>);
+  const id = resolvedParams.id;
 
   if (!id) {
     notFound();
