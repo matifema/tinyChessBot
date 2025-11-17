@@ -4,8 +4,9 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 export const metadata = {
-  title: "Superblog",
-  description: "A blog app using Next.js and Prisma",
+  title: "Giorgio Immobiliare",
+  description:
+    "Agenzia Immobiliare Giorgio Immobiliare - Cerenova - Cerveteri (Roma)",
 };
 
 export default function RootLayout({
@@ -14,11 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="it" className="h-full">
       <body className="h-full overflow-hidden">
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-1 overflow-auto">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>
