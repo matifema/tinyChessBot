@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
           credentials?.password === process.env.ADMIN_PASSWORD
         ) {
           // Any object returned will be saved in `user` property of the JWT
-          return { id: "1", name: "Admin", email: credentials.email };
+          return { id: "1", name: "Admin", email: credentials?.email };
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;

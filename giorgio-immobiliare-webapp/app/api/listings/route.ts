@@ -2,7 +2,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { ListingStatus, PropertyType } from "@prisma/client";
+
+type PropertyType =
+  | "appartamento"
+  | "villa"
+  | "casale"
+  | "negozio"
+  | "terreno"
+  | "box";
+
+type ListingStatus = "for_sale" | "for_rent" | "sold" | "rented";
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
