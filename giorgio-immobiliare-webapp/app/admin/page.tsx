@@ -100,7 +100,14 @@ export default function AdminPage() {
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
           >
             <option value="all">Tutti</option>
-            {Object.values(PropertyType).map((type) => (
+            {[
+              "appartamento",
+              "villa",
+              "casale",
+              "negozio",
+              "terreno",
+              "box",
+            ].map((type) => (
               <option key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </option>
