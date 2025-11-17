@@ -22,7 +22,7 @@ This is the primary table that stores all property listing information.
 ```sql
 -- Custom ENUM types for status and property type
 CREATE TYPE listing_status AS ENUM ('for_sale', 'for_rent', 'sold', 'rented');
-CREATE TYPE property_type AS ENUM ('appartamento', 'villa', 'casale', 'terreno', 'box');
+CREATE TYPE property_type AS ENUM ('appartamento', 'villa', 'casale', 'negozio', 'terreno', 'box');
 
 -- The main listings table
 CREATE TABLE listings (
