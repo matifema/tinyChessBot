@@ -4,51 +4,46 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function Home() {
-  const posts = await prisma.post.findMany({
+  const listings = await prisma.listing.findMany({
     orderBy: {
       createdAt: "desc",
     },
     take: 6,
-    include: {
-      author: {
-        select: {
-          name: true,
-        },
-      },
-    },
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center -mt-16 p-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-8 pt-24">
       <h1 className="text-5xl font-extrabold mb-12 text-[#333333]">
-        Recent Posts
+        Le nostre ultime proprietà
       </h1>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
-        {posts.map((post) => (
-          <Link key={post.id} href={`/posts/${post.id}`} className="group">
-            <div className="border rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300">
+        {listings.map((listing) => (
+          <Link
+            key={listing.id}
+            href={`/annunci/${listing.id}`}
+            className="group"
+          >
+            <div className="border rounded-lg shadow-md bg-white p-6 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
               <h2 className="text-2xl font-semibold text-blue-600 group-hover:underline mb-2">
-                {post.title}
+                {listing.title}
               </h2>
-              <p className="text-sm text-gray-500">
-                by {post.author ? post.author.name : "Anonymous"}
+              <p className="text-lg text-gray-800 font-bold">
+                €{listing.price.toString()}
               </p>
-              <p className="text-xs text-gray-400 mb-4">
-                {new Date(post.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+              <p className="text-md text-gray-600 mb-4 flex-grow">
+                {listing.location}
               </p>
-              <div className="relative">
-                <p className="text-gray-700 leading-relaxed line-clamp-2">
-                  {post.content || "No content available."}
-                </p>
-                <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-gray-50 to-transparent" />
-              </div>
+              <p className="text-gray-700 leading-relaxed line-clamp-3">
+                {listing.description || "Nessuna descrizione disponibile."}
+              </p>
             </div>
           </Link>
         ))}
+        {listings.length === 0 && (
+          <p className="text-center col-span-3 text-gray-500">
+            Nessun annuncio disponibile al momento.
+          </p>
+        )}
       </div>
     </div>
   );

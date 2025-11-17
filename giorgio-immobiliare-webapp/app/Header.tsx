@@ -10,20 +10,11 @@ export default function Header() {
           href="/"
           className="text-xl font-bold text-gray-800 hover:text-blue-600 transition-colors"
         >
-          Superblog
+          Giorgio Immobiliare
         </Link>
         <div className="space-x-4">
-          <Link href="/posts" className="text-blue-600 hover:underline">
-            Posts
-          </Link>
-          <Link href="/posts/new" className="text-blue-600 hover:underline">
-            New Post
-          </Link>
-          <Link
-            href="/users/new"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-          >
-            New User
+          <Link href="/annunci" className="text-blue-600 hover:underline">
+            Annunci
           </Link>
         </div>
       </nav>
