@@ -17,8 +17,16 @@ export default async function ListingPage({ params }: ListingPageProps) {
   if (!id) {
     notFound();
   }
-
+  
   console.log(`[ListingPage] Searching for listing with ID: '${id}'`);
+
+  // DEBUG: Check what listings are visible from this component                            
+  const allListings = await prisma.listing.findMany({ select: { id: true } });
+  console.log(
+    "[ListingPage] IDs of all listings found in DB:",
+    allListings.map((l) => l.id)
+  );
+
   const listing = await prisma.listing.findUnique({
     where: { id },
   });
