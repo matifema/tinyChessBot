@@ -8,9 +8,8 @@ interface ListingPageProps {
   };
 }
 
-export default async function ListingPage({
-  params: { id },
-}: ListingPageProps) {
+export default async function ListingPage({ params }: ListingPageProps) {
+  const id = params.id;
   if (!id) {
     notFound();
   }
