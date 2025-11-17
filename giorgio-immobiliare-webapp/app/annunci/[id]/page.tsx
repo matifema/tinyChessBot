@@ -14,11 +14,13 @@ export default async function ListingPage({ params }: ListingPageProps) {
     notFound();
   }
 
+  console.log(`[ListingPage] Searching for listing with ID: '${id}'`);
   const listing = await prisma.listing.findUnique({
     where: { id },
   });
 
   if (!listing) {
+    console.log(`[ListingPage] Listing with ID '${id}' not found in database.`);
     notFound();
   }
 
