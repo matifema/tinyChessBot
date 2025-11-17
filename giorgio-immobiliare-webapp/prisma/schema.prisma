@@ -8,20 +8,35 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+enum ListingStatus {
+  for_sale
+  for_rent
+  sold
+  rented
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
+enum PropertyType {
+  appartamento
+  villa
+  casale
+  negozio
+  terreno
+  box
+}
+
+model Listing {
+  id              String        @id @default(uuid())
+  referenceNumber Int           @unique @default(autoincrement()) @map("reference_number")
+  title           String
+  description     String?
+  location        String
+  price           Decimal
+  status          ListingStatus @default(for_sale)
+  propertyType    PropertyType  @map("property_type")
+  bedrooms        Int?
+  bathrooms       Int?
+  squareMeters    Int?          @map("square_meters")
+  imageUrls       String[]      @map("image_urls")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
 }
