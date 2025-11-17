@@ -2,14 +2,16 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent, useRef } from "react";
 import Link from "next/link";
 
 export default function NewListingPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const inputFileRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -46,10 +48,32 @@ export default function NewListingPage() {
     setError(null);
 
     try {
+      const uploadedImageUrls = [];
+      if (files.length > 0) {
+        for (const file of files) {
+          const response = await fetch(`/api/upload?filename=${file.name}`, {
+            method: "POST",
+            body: file,
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to upload file.");
+          }
+
+          const newBlob = await response.json();
+          uploadedImageUrls.push(newBlob.url);
+        }
+      }
+
+      const listingData = {
+        ...formData,
+        imageUrls: uploadedImageUrls.join(","),
+      };
+
       const res = await fetch("/api/listings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(listingData),
       });
 
       if (!res.ok) {
@@ -266,23 +290,36 @@ export default function NewListingPage() {
 
         <div>
           <label
-            htmlFor="imageUrls"
+            htmlFor="images"
             className="block text-sm font-medium text-gray-700"
           >
-            URL Immagini
+            Immagini
           </label>
           <input
-            type="text"
-            name="imageUrls"
-            id="imageUrls"
-            value={formData.imageUrls}
-            onChange={handleChange}
-            className="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-            placeholder="Separati da virgola, es. url1, url2"
+            type="file"
+            name="images"
+            id="images"
+            ref={inputFileRef}
+            onChange={(e) =>
+              setFiles(e.target.files ? Array.from(e.target.files) : [])
+            }
+            multiple
+            className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
           />
           <p className="mt-2 text-sm text-gray-500">
-            Inserisci gli URL delle immagini separati da una virgola.
+            Seleziona una o più immagini per l'annuncio.
           </p>
+          <div className="mt-4">
+            {files.length > 0 && (
+              <ul>
+                {files.map((file, index) => (
+                  <li key={index} className="text-sm text-gray-600">
+                    {file.name} ({Math.round(file.size / 1024)} KB)
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end">
