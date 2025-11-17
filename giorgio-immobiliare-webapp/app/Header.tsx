@@ -12,10 +12,11 @@ export default function Header() {
         >
           Giorgio Immobiliare
         </Link>
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
           <Link href="/annunci" className="text-blue-600 hover:underline">
             Annunci
           </Link>
+          <span className="text-gray-600">Tel. 333.3496169</span>
         </div>
       </nav>
     </header>
