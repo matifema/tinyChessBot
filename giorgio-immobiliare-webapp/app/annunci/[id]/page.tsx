@@ -26,6 +26,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   if (!listing) {
     console.log(`[ListingPage] Listing with ID '${id}' not found in database.`);
     notFound();
+    return null;
   }
 
   return (
