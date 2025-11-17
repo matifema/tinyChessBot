@@ -9,6 +9,10 @@ interface ListingPageProps {
 }
 
 export default async function ListingPage({ params }: ListingPageProps) {
+  if (!params.id) {
+    notFound();
+  }
+
   const listing = await prisma.listing.findUnique({
     where: { id: params.id },
   });
