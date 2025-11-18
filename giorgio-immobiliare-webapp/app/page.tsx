@@ -1,6 +1,8 @@
+"use client"
+
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import PropertyCard from "./components/PropertyCard";
+import PropertyCard from "@/app/components/PropertyCard";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +29,7 @@ export default async function HomePage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage:
-                "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=80')",
+                "/images/heroimage.png",
             }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-br from-[#0033cc]/95 to-[#0055ff]/90"></div>
