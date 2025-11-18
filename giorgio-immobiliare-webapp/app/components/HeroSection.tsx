@@ -30,11 +30,11 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-r from-[#0033cc] to-[#0055ff] text-white overflow-hidden">
+    <section className="relative bg-gradient-to-r from-[#0033cc] to-[#0051f9] text-white overflow-hidden">
       {/* Background Image - Left Side */}
       <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-cover bg-center md:bg-left opacity-30 md:opacity-100"
+          className="absolute inset-0 bg-center md:bg-left opacity-30 md:opacity-100"
           style={{
             backgroundImage: "url('/images/heroimage.png')",
             maskImage:
