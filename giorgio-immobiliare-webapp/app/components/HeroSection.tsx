@@ -34,7 +34,7 @@ export default function HeroSection() {
       {/* Background Image - Left Side */}
       <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-cover bg-center md:bg-left opacity-30 md:opacity-100"
+          className="absolute inset-0 bg-contain bg-left bg-no-repeat opacity-30 md:opacity-100"
           style={{
             backgroundImage: "url('/images/heroimage.png')",
           }}
@@ -44,7 +44,7 @@ export default function HeroSection() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0, 51, 204, 0.3) 50%, rgba(0, 51, 204, 0.7) 65%, rgba(0, 51, 204, 0.95) 80%, #0033cc 100%)",
+              "linear-gradient(to right, transparent 0%, transparent 40%, rgba(0, 51, 204, 0.5) 50%, #0033cc 60%)",
           }}
         ></div>
       </div>
