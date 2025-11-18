@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const propertyTypes = [
     { value: "appartamento", label: "Appartamenti" },
@@ -17,11 +18,24 @@ export default function Header() {
     { value: "box", label: "Box" },
   ];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="w-full bg-white shadow-md sticky top-0 z-50">
+    <header className="w-full bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar - Contact Info */}
-        <div className="hidden lg:flex items-center justify-end py-2 text-sm">
+        <div
+          className={`hidden lg:flex items-center justify-end text-sm border-b border-gray-200 overflow-hidden transition-all duration-300 ${
+            isScrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 py-2 opacity-100"
+          }`}
+        >
           <div className="flex items-center space-x-6 text-gray-600">
             <a
               href="tel:3333496169"
@@ -81,15 +95,16 @@ export default function Header() {
         </div>
 
         {/* Main Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center py-3">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
             <Image
               src="/images/logo.png"
-              alt={`Logo`}
-              width={400}
+              alt="Giorgio Immobiliare Logo"
+              width={300}
               height={40}
-              className="cursor-pointer"
+              className="cursor-pointer h-10 w-auto"
+              priority
             />
           </Link>
 
@@ -106,7 +121,9 @@ export default function Header() {
             <div className="relative">
               <button
                 onClick={() => setPropertyDropdownOpen(!propertyDropdownOpen)}
-                onBlur={() => setTimeout(() => setPropertyDropdownOpen(false), 200)}
+                onBlur={() =>
+                  setTimeout(() => setPropertyDropdownOpen(false), 200)
+                }
                 className="flex items-center space-x-1 text-gray-700 hover:text-[#0033cc] font-medium transition-colors"
               >
                 <span>Tipologie</span>
