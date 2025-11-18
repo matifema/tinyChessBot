@@ -190,7 +190,7 @@ export default function NewListingPage() {
               required
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Es. Appartamento luminoso con vista mare"
             />
           </div>
@@ -209,7 +209,7 @@ export default function NewListingPage() {
               required
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Es. Cerenova, Cerveteri"
             />
           </div>
@@ -228,7 +228,7 @@ export default function NewListingPage() {
               required
               value={formData.price}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="150000"
             />
           </div>
@@ -247,7 +247,7 @@ export default function NewListingPage() {
                 required
                 value={formData.propertyType}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 {[
                   "appartamento",
@@ -276,7 +276,7 @@ export default function NewListingPage() {
                 required
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 <option value="for_sale">In Vendita</option>
                 <option value="for_rent">In Affitto</option>
@@ -299,7 +299,7 @@ export default function NewListingPage() {
               rows={6}
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Descrivi le caratteristiche principali dell'immobile..."
             ></textarea>
           </div>
@@ -318,7 +318,7 @@ export default function NewListingPage() {
                 id="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="3"
               />
             </div>
@@ -335,7 +335,7 @@ export default function NewListingPage() {
                 id="bathrooms"
                 value={formData.bathrooms}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="2"
               />
             </div>
@@ -352,7 +352,7 @@ export default function NewListingPage() {
                 id="squareMeters"
                 value={formData.squareMeters}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="120"
               />
             </div>

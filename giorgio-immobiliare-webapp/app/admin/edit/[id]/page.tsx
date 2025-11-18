@@ -67,11 +67,11 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
         bedrooms: listing.bedrooms?.toString() || "",
         bathrooms: listing.bathrooms?.toString() || "",
         squareMeters: listing.squareMeters?.toString() || "",
-        imageUrls: listing.imageUrls,
+        imageUrls: listing.imageUrls.toString() || "",
       });
 
       if (listing.imageUrls) {
-        setExistingImages(listing.imageUrls.split(",").filter(url => url.trim() !== ""));
+        setExistingImages(listing.imageUrls.filter(url => url.trim() !== ""));
       }
     } catch (err: any) {
       setError(err.message);
@@ -242,7 +242,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
               required
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Es. Appartamento luminoso con vista mare"
             />
           </div>
@@ -261,7 +261,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
               required
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Es. Cerenova, Cerveteri"
             />
           </div>
@@ -280,7 +280,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
               required
               value={formData.price}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="150000"
             />
           </div>
@@ -299,7 +299,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 required
                 value={formData.propertyType}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 {[
                   "appartamento",
@@ -328,7 +328,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 required
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 <option value="for_sale">In Vendita</option>
                 <option value="for_rent">In Affitto</option>
@@ -351,7 +351,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
               rows={6}
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               placeholder="Descrivi le caratteristiche principali dell'immobile..."
             ></textarea>
           </div>
@@ -370,7 +370,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 id="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="3"
               />
             </div>
@@ -387,7 +387,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 id="bathrooms"
                 value={formData.bathrooms}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="2"
               />
             </div>
@@ -404,7 +404,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 id="squareMeters"
                 value={formData.squareMeters}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
                 placeholder="120"
               />
             </div>

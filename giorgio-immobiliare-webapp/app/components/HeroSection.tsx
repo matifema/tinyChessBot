@@ -59,6 +59,7 @@ export default function HeroSection() {
           <div className="max-w-2xl text-center md:text-left md:pr-8 lg:pr-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Trova{" "}
+              <br />
               <span className="inline-block relative min-h-[1.2em]">
                 <span
                   className={`inline-block transition-all duration-500 ${isAnimating

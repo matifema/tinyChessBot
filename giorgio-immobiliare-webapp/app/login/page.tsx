@@ -61,7 +61,7 @@ function LoginContent() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="block text-sm font-semibold text-black mb-2"
               >
                 Email
               </label>
@@ -73,7 +73,7 @@ function LoginContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent transition-all"
                 placeholder="admin@example.com"
               />
             </div>
@@ -81,7 +81,7 @@ function LoginContent() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className="block text-sm text-black font-semibold mb-2"
               >
                 Password
               </label>
@@ -93,7 +93,7 @@ function LoginContent() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent transition-all"
                 placeholder="••••••••"
               />
             </div>

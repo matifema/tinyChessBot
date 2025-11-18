@@ -144,7 +144,7 @@ function AnnunciContent() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-10">
       {/* Filters Container */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
 

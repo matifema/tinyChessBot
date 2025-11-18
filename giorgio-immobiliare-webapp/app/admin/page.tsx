@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PropertyType, Listing } from "@prisma/client";
+import { Listing } from "@prisma/client";
 import Link from "next/link";
 
 export default function AdminPage() {
@@ -121,7 +121,7 @@ export default function AdminPage() {
                 name="propertyType"
                 value={propertyTypeFilter}
                 onChange={(e) => setPropertyTypeFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 <option value="all">Tutti</option>
                 {[
@@ -150,7 +150,7 @@ export default function AdminPage() {
                 name="sortBy"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-[#0033cc] focus:border-transparent"
               >
                 <option value="createdAt_desc">Più Recenti</option>
                 <option value="createdAt_asc">Meno Recenti</option>

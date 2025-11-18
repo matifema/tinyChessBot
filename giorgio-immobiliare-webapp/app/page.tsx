@@ -23,6 +23,44 @@ export default async function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Featured Listings */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Annunci in Evidenza
+            </h2>
+            <p className="text-lg text-gray-600">
+              Scopri le nostre migliori proposte immobiliari
+            </p>
+          </div>
+
+          {featuredListings.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">
+                Nessun annuncio disponibile al momento.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {featuredListings.map((listing) => (
+                  <PropertyCard key={listing.id} listing={listing} />
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                <Link
+                  href="/annunci"
+                  className="inline-block px-8 py-4 bg-[#0033cc] text-white rounded-lg font-semibold hover:bg-[#0055ff] transition-colors shadow-lg"
+                >
+                  Vedi Tutti gli Annunci
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -97,44 +135,6 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Featured Listings */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Annunci in Evidenza
-            </h2>
-            <p className="text-lg text-gray-600">
-              Scopri le nostre migliori proposte immobiliari
-            </p>
-          </div>
-
-          {featuredListings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
-                Nessun annuncio disponibile al momento.
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {featuredListings.map((listing) => (
-                  <PropertyCard key={listing.id} listing={listing} />
-                ))}
-              </div>
-              <div className="text-center mt-12">
-                <Link
-                  href="/annunci"
-                  className="inline-block px-8 py-4 bg-[#0033cc] text-white rounded-lg font-semibold hover:bg-[#0055ff] transition-colors shadow-lg"
-                >
-                  Vedi Tutti gli Annunci
-                </Link>
-              </div>
-            </>
-          )}
         </div>
       </section>
 

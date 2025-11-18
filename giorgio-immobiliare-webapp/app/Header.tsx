@@ -103,7 +103,7 @@ export default function Header() {
               alt="Giorgio Immobiliare Logo"
               width={400}
               height={50}
-              className="cursor-pointer h-12 w-auto"
+              className="cursor-pointer w-auto"
               priority
             />
           </Link>
