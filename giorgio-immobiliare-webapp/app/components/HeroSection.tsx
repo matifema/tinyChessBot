@@ -8,12 +8,12 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-center bg-no-repeat bg-left"
           style={{
             backgroundImage: "url('/images/heroimage.png')",
           }}
         ></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0033cc]/95 to-[#0055ff]/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0033cc]/0 to-[#0055ff]/70"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
@@ -21,7 +21,7 @@ export default function HeroSection() {
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Trova{" "}
             <span className="inline-block relative">
-              <span className="animated-text">la Casa</span>
+              <span className="animated-text"></span>
             </span>
             <br />
             dei Tuoi Sogni
