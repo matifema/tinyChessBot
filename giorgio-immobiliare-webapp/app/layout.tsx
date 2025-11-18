@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it" className="h-full">
-      <body className="h-full overflow-hidden bg-gray-50">
+      <body className="h-full overflow-scroll bg-gray-50">
         <AuthProvider>
           <div className="min-h-screen flex flex-col">
             <Header />

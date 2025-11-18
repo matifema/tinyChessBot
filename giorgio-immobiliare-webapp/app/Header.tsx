@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Header() {
-  const { status } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -15,17 +14,15 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-2 group"
+            className="flex items-center group"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-[#0033cc] to-[#0055ff] rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-              <span className="text-white font-bold text-xl">GI</span>
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-xl font-bold text-[#0033cc]">
-                Giorgio Immobiliare
-              </div>
-              <div className="text-xs text-gray-600">Cerenova - Cerveteri</div>
-            </div>
+            <Image
+              src="/images/logo.png"
+              alt={`Logo`}
+              width={400}
+              height={50}
+              className="cursor-pointer"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -55,30 +52,6 @@ export default function Header() {
               </svg>
               <span>333.3496169</span>
             </a>
-            {status === "unauthenticated" && (
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-[#0033cc] text-white rounded-lg hover:bg-[#0055ff] transition-colors font-medium"
-              >
-                Login
-              </Link>
-            )}
-            {status === "authenticated" && (
-              <>
-                <Link
-                  href="/admin"
-                  className="text-gray-700 hover:text-[#0033cc] font-medium transition-colors"
-                >
-                  Admin
-                </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="px-4 py-2 bg-[#fe0000] text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                >
-                  Logout
-                </button>
-              </>
-            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -128,35 +101,6 @@ export default function Header() {
             >
               📞 333.3496169
             </a>
-            {status === "unauthenticated" && (
-              <Link
-                href="/login"
-                className="block px-4 py-2 bg-[#0033cc] text-white rounded-lg hover:bg-[#0055ff] transition-colors text-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Login
-              </Link>
-            )}
-            {status === "authenticated" && (
-              <>
-                <Link
-                  href="/admin"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin
-                </Link>
-                <button
-                  onClick={() => {
-                    signOut();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full px-4 py-2 bg-[#fe0000] text-white rounded-lg hover:bg-red-700 transition-colors text-center"
-                >
-                  Logout
-                </button>
-              </>
-            )}
           </nav>
         )}
       </div>
