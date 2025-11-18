@@ -30,7 +30,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-r from-[#0033cc] to-[#0051f9] text-white overflow-hidden min-h-[600px]">
+    <section className="relative bg-[#0033cc] text-white overflow-hidden min-h-[600px]">
       <div className="absolute inset-0 flex">
         {/* Left Side - Image with Gradient */}
         <div className="relative w-full md:w-1/2 flex-shrink-0">
@@ -46,7 +46,7 @@ export default function HeroSection() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, transparent 0%, transparent 60%, rgba(0, 51, 204, 0.3) 75%, rgba(0, 51, 204, 0.7) 85%, #0033cc 100%)",
+                "linear-gradient(to right, transparent 0%, transparent 50%, rgba(0, 51, 204, 0.5) 70%, rgba(0, 51, 204, 0.9) 90%, #0033cc 100%)",
             }}
           ></div>
         </div>
