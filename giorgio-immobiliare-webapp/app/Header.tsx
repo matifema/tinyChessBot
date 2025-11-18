@@ -21,7 +21,7 @@ export default function Header() {
     <header className="w-full bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar - Contact Info */}
-        <div className="hidden lg:flex items-center justify-end py-2 text-sm border-b border-gray-200">
+        <div className="hidden lg:flex items-center justify-end py-2 text-sm">
           <div className="flex items-center space-x-6 text-gray-600">
             <a
               href="tel:3333496169"
