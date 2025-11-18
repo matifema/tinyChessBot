@@ -81,14 +81,14 @@ export default function Header() {
         </div>
 
         {/* Main Header */}
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
             <Image
               src="/images/logo.png"
               alt={`Logo`}
               width={400}
-              height={50}
+              height={40}
               className="cursor-pointer"
             />
           </Link>
