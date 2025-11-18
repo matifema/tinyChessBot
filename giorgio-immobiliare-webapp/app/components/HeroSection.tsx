@@ -30,28 +30,34 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-r from-[#0033cc] to-[#0051f9] text-white overflow-hidden">
-      {/* Background Image - Left Side */}
-      <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 bg-contain bg-left bg-no-repeat opacity-30 md:opacity-100"
-          style={{
-            backgroundImage: "url('/images/heroimage.png')",
-          }}
-        ></div>
-        {/* Gradient Overlay for smooth blend */}
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            background:
-              "linear-gradient(to right, transparent 0%, transparent 40%, rgba(0, 51, 204, 0.5) 50%, #0033cc 60%)",
-          }}
-        ></div>
+    <section className="relative bg-gradient-to-r from-[#0033cc] to-[#0051f9] text-white overflow-hidden min-h-[600px]">
+      <div className="absolute inset-0 flex">
+        {/* Left Side - Image with Gradient */}
+        <div className="relative w-full md:w-1/2 flex-shrink-0">
+          <div
+            className="absolute inset-0 bg-contain bg-left bg-no-repeat opacity-30 md:opacity-100"
+            style={{
+              backgroundImage: "url('/images/heroimage.png')",
+              backgroundSize: "contain",
+            }}
+          ></div>
+          {/* Gradient overlay that blends image to background */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, transparent 0%, transparent 60%, rgba(0, 51, 204, 0.3) 75%, rgba(0, 51, 204, 0.7) 85%, #0033cc 100%)",
+            }}
+          ></div>
+        </div>
+
+        {/* Right Side - Solid Background */}
+        <div className="hidden md:block w-1/2 bg-[#0033cc]"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-        <div className="flex justify-end md:pr-8 lg:pr-16">
-          <div className="max-w-2xl text-center md:text-left">
+        <div className="flex justify-center md:justify-end">
+          <div className="max-w-2xl text-center md:text-left md:pr-8 lg:pr-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Trova{" "}
               <span className="inline-block relative min-h-[1.2em]">
