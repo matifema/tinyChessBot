@@ -28,11 +28,11 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="w-full bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 transition-all duration-300">
+    <header className="w-full bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar - Contact Info */}
         <div
-          className={`hidden lg:flex items-center justify-end text-sm border-b border-gray-200 overflow-hidden transition-all duration-300 ${
+          className={`hidden lg:flex items-center justify-end text-sm overflow-hidden transition-all duration-300 ${
             isScrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 py-2 opacity-100"
           }`}
         >
@@ -95,15 +95,15 @@ export default function Header() {
         </div>
 
         {/* Main Header */}
-        <div className="flex justify-between items-center py-3">
+        <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
             <Image
               src="/images/logo.png"
               alt="Giorgio Immobiliare Logo"
-              width={300}
-              height={40}
-              className="cursor-pointer h-10 w-auto"
+              width={400}
+              height={50}
+              className="cursor-pointer h-12 w-auto"
               priority
             />
           </Link>
