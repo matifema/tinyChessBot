@@ -41,7 +41,7 @@ export default function HeroSection() {
         ></div>
         {/* Gradient Overlay for smooth blend */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 z-10"
           style={{
             background:
               "linear-gradient(to right, transparent 0%, transparent 40%, rgba(0, 51, 204, 0.5) 50%, #0033cc 60%)",
