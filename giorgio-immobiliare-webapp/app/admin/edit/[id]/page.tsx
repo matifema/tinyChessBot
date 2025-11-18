@@ -2,14 +2,15 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, FormEvent, useRef } from "react";
+import { use, useEffect, useState, FormEvent, useRef } from "react";
 import Link from "next/link";
 import { Listing } from "@prisma/client";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export default function EditListingPage({ params }: { params: { id: string } }) {
+export default function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -44,13 +45,13 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
     if (status === "authenticated") {
       fetchListing();
     }
-  }, [status, params.id]);
+  }, [status, id]);
 
   const fetchListing = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/listings/${params.id}`);
+      const res = await fetch(`/api/listings/${id}`);
       if (!res.ok) {
         throw new Error("Failed to fetch listing");
       }
@@ -159,7 +160,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
         imageUrls: allImageUrls.join(","),
       };
 
-      const res = await fetch(`/api/listings/${params.id}`, {
+      const res = await fetch(`/api/listings/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(listingData),
