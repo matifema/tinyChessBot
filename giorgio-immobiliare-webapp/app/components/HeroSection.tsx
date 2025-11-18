@@ -31,28 +31,24 @@ export default function HeroSection() {
 
   return (
     <section className="relative bg-[#0033cc] text-white overflow-hidden min-h-[600px]">
-      <div className="absolute inset-0 flex">
-        {/* Left Side - Image with Gradient */}
-        <div className="relative w-full md:w-1/2 flex-shrink-0">
+      <div className="absolute inset-0">
+        {/* Image Container - Fixed to left half */}
+        <div className="absolute left-0 top-0 bottom-0 w-full md:w-1/2">
           <div
             className="absolute inset-0 bg-contain bg-left bg-no-repeat opacity-30 md:opacity-100"
             style={{
               backgroundImage: "url('/images/heroimage.png')",
-              backgroundSize: "contain",
             }}
           ></div>
-          {/* Gradient overlay that blends image to background */}
+          {/* Smooth gradient overlay */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, transparent 0%, transparent 50%, rgba(0, 51, 204, 0.5) 70%, rgba(0, 51, 204, 0.9) 90%, #0033cc 100%)",
+                "linear-gradient(to right, transparent 0%, transparent 60%, rgba(0, 51, 204, 0.3) 75%, rgba(0, 51, 204, 0.6) 85%, rgba(0, 51, 204, 0.85) 92%, #0033cc 100%)",
             }}
           ></div>
         </div>
-
-        {/* Right Side - Solid Background */}
-        <div className="hidden md:block w-1/2 bg-[#0033cc]"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
