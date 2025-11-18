@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent, useRef } from "react";
 import Link from "next/link";
 
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 export default function NewListingPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -42,6 +45,41 @@ export default function NewListingPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateFiles = (fileList: FileList): { valid: File[]; errors: string[] } => {
+    const valid: File[] = [];
+    const errors: string[] = [];
+
+    Array.from(fileList).forEach((file) => {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        errors.push(`${file.name}: Tipo di file non supportato. Usa JPG, JPEG, PNG o WEBP.`);
+      } else if (file.size > MAX_FILE_SIZE) {
+        errors.push(`${file.name}: File troppo grande. Massimo 10MB.`);
+      } else {
+        valid.push(file);
+      }
+    });
+
+    return { valid, errors };
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const { valid, errors } = validateFiles(e.target.files);
+      
+      if (errors.length > 0) {
+        setError(errors.join("\n"));
+      } else {
+        setError(null);
+      }
+      
+      setFiles(valid);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -57,7 +95,7 @@ export default function NewListingPage() {
           });
 
           if (!response.ok) {
-            throw new Error("Failed to upload file.");
+            throw new Error(`Failed to upload ${file.name}`);
           }
 
           const newBlob = await response.json();
@@ -100,7 +138,6 @@ export default function NewListingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href="/admin"
@@ -129,18 +166,16 @@ export default function NewListingPage() {
           </p>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-xl shadow-md p-8 space-y-6"
         >
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg whitespace-pre-line">
               {error}
             </div>
           )}
 
-          {/* Title */}
           <div>
             <label
               htmlFor="title"
@@ -160,7 +195,6 @@ export default function NewListingPage() {
             />
           </div>
 
-          {/* Location */}
           <div>
             <label
               htmlFor="location"
@@ -180,7 +214,6 @@ export default function NewListingPage() {
             />
           </div>
 
-          {/* Price */}
           <div>
             <label
               htmlFor="price"
@@ -200,7 +233,6 @@ export default function NewListingPage() {
             />
           </div>
 
-          {/* Property Type and Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label
@@ -254,7 +286,6 @@ export default function NewListingPage() {
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <label
               htmlFor="description"
@@ -273,7 +304,6 @@ export default function NewListingPage() {
             ></textarea>
           </div>
 
-          {/* Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label
@@ -328,7 +358,6 @@ export default function NewListingPage() {
             </div>
           </div>
 
-          {/* Images */}
           <div>
             <label
               htmlFor="images"
@@ -342,11 +371,9 @@ export default function NewListingPage() {
                 name="images"
                 id="images"
                 ref={inputFileRef}
-                onChange={(e) =>
-                  setFiles(e.target.files ? Array.from(e.target.files) : [])
-                }
+                onChange={handleFileChange}
                 multiple
-                accept="image/*"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
                 className="hidden"
               />
               <button
@@ -370,7 +397,7 @@ export default function NewListingPage() {
                 Seleziona Immagini
               </button>
               <p className="mt-2 text-sm text-gray-500">
-                PNG, JPG, JPEG fino a 10MB
+                PNG, JPG, JPEG, WEBP fino a 10MB
               </p>
             </div>
             {files.length > 0 && (
@@ -379,26 +406,50 @@ export default function NewListingPage() {
                   {files.length} {files.length === 1 ? "file" : "file"}{" "}
                   selezionato{files.length === 1 ? "" : "i"}:
                 </p>
-                <ul className="space-y-1">
+                <ul className="space-y-2">
                   {files.map((file, index) => (
                     <li
                       key={index}
-                      className="text-sm text-gray-600 flex items-center"
+                      className="text-sm text-gray-600 flex items-center justify-between bg-gray-50 p-2 rounded"
                     >
-                      <svg
-                        className="w-4 h-4 mr-2 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <div className="flex items-center">
+                        <svg
+                          className="w-4 h-4 mr-2 text-green-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span>
+                          {file.name} ({Math.round(file.size / 1024)} KB)
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(index)}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        aria-label="Rimuovi file"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {file.name} ({Math.round(file.size / 1024)} KB)
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -406,7 +457,6 @@ export default function NewListingPage() {
             )}
           </div>
 
-          {/* Submit Button */}
           <div className="flex justify-end gap-4 pt-6 border-t">
             <Link
               href="/admin"
