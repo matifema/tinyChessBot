@@ -34,19 +34,23 @@ export default function HeroSection() {
       {/* Background Image - Left Side */}
       <div className="absolute inset-0">
         <div
-          className="absolute inset-0 bg-center md:bg-left opacity-30 md:opacity-100"
+          className="absolute inset-0 bg-cover bg-center md:bg-left opacity-30 md:opacity-100"
           style={{
             backgroundImage: "url('/images/heroimage.png')",
-            maskImage:
-              "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 40%, rgba(0,0,0,0) 70%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 40%, rgba(0,0,0,0) 70%)",
+          }}
+        ></div>
+        {/* Gradient Overlay for smooth blend */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0, 51, 204, 0.3) 50%, rgba(0, 51, 204, 0.7) 65%, rgba(0, 51, 204, 0.95) 80%, #0033cc 100%)",
           }}
         ></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-        <div className="flex justify-end">
+        <div className="flex justify-end md:pr-8 lg:pr-16">
           <div className="max-w-2xl text-center md:text-left">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Trova{" "}
