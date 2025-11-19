@@ -14,16 +14,37 @@ The core model representing a real estate property.
 | Field | Type | Description |
 |-------|------|-------------|
 | `id` | String (UUID) | Unique identifier. |
+| `referenceNumber` | Int | Auto-incrementing unique reference number. |
 | `title` | String | Title of the listing. |
-| `description` | String | Detailed description. |
-| `price` | Float/Int | Asking price in EUR. |
+| `description` | String? | Detailed description (optional). |
 | `location` | String | Address or general location. |
-| `propertyType` | String | Type of property (e.g., Apartment, Villa). |
+| `price` | Decimal | Asking price. |
+| `status` | ListingStatus | Status of the listing (default: `for_sale`). |
+| `propertyType` | PropertyType | Type of property. |
+| `bedrooms` | Int? | Number of bedrooms (optional). |
+| `bathrooms` | Int? | Number of bathrooms (optional). |
+| `squareMeters` | Int? | Size in square meters (optional). |
 | `imageUrls` | String[] | Array of URLs pointing to Vercel Blob storage. |
 | `createdAt` | DateTime | Timestamp of creation. |
 | `updatedAt` | DateTime | Timestamp of last update. |
 
-*(Note: Exact field names and types are defined in `prisma/schema.prisma`)*
+### Enums
+
+#### ListingStatus
+Defines the availability status of a property.
+- `for_sale`
+- `for_rent`
+- `sold`
+- `rented`
+
+#### PropertyType
+Defines the category of the property.
+- `appartamento`
+- `villa`
+- `casale`
+- `negozio`
+- `terreno`
+- `box`
 
 ## Migrations
 
