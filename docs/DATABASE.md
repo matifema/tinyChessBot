@@ -1,69 +1,38 @@
-# Database Schema
+# Database Documentation
 
-This document defines the database schema for the GiorgioImmobiliare application, hosted on Vercel Postgres.
+The project uses **PostgreSQL** as the relational database, managed via **Prisma ORM**.
 
-## 1. Database Engine
+## Schema Overview
 
-- **Provider**: Vercel Postgres
-- **Engine**: PostgreSQL 16
+The database schema is defined in `prisma/schema.prisma`.
 
-## 2. Connection
+### Models
 
-The application connects to the database using connection strings provided by Vercel as environment variables. All database access is funneled through the `/lib/db.ts` module.
+#### Listing
+The core model representing a real estate property.
 
-## 3. Tables
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | String (UUID) | Unique identifier. |
+| `title` | String | Title of the listing. |
+| `description` | String | Detailed description. |
+| `price` | Float/Int | Asking price in EUR. |
+| `location` | String | Address or general location. |
+| `propertyType` | String | Type of property (e.g., Apartment, Villa). |
+| `imageUrls` | String[] | Array of URLs pointing to Vercel Blob storage. |
+| `createdAt` | DateTime | Timestamp of creation. |
+| `updatedAt` | DateTime | Timestamp of last update. |
 
-### `listings`
+*(Note: Exact field names and types are defined in `prisma/schema.prisma`)*
 
-This is the primary table that stores all property listing information.
+## Migrations
 
-#### SQL Schema (DDL)
+Database changes are handled via Prisma Migrations.
 
-```sql
--- Custom ENUM types for status and property type
-CREATE TYPE listing_status AS ENUM ('for_sale', 'for_rent', 'sold', 'rented');
-CREATE TYPE property_type AS ENUM ('appartamento', 'villa', 'casale', 'negozio', 'terreno', 'box');
+- **Run migrations**: `npx prisma migrate dev`
+- **Reset database**: `npx prisma migrate reset`
+- **Seed data**: `npx prisma db seed` (uses `prisma/seed.ts`)
 
--- The main listings table
-CREATE TABLE listings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    location VARCHAR(255) NOT NULL,
-    price NUMERIC(12, 2) NOT NULL,
-    status listing_status NOT NULL DEFAULT 'for_sale',
-    property_type property_type NOT NULL,
-    bedrooms INT,
-    bathrooms INT,
-    square_meters INT,
-    image_urls TEXT[],
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+## Connection
 
--- Optional: Create an index on columns used for filtering
-CREATE INDEX idx_listings_status ON listings(status);
-CREATE INDEX idx_listings_property_type ON listings(property_type);
-CREATE INDEX idx_listings_location ON listings(location);
-```
-
-#### Column Descriptions
-
-| Column          | Type                 | Description                                                                 |
-|-----------------|----------------------|-----------------------------------------------------------------------------|
-| `id`            | `UUID`               | The unique identifier for the listing (Primary Key).                          |
-| `title`         | `VARCHAR(255)`       | The title of the listing (e.g., "Villa Panoramica").                          |
-| `description`   | `TEXT`               | A detailed description of the property.                                     |
-| `location`      | `VARCHAR(255)`       | The city or area where the property is located (e.g., "Cerenova").          |
-| `price`         | `NUMERIC(12, 2)`     | The price of the property. For rentals, this is the monthly rate.           |
-| `status`        | `listing_status`     | The current status of the listing (`for_sale`, `for_rent`, `sold`, `rented`). |
-| `property_type` | `property_type`      | The type of property (`appartamento`, `villa`, `casale`, `terreno`, `box`).   |
-| `bedrooms`      | `INT`                | The number of bedrooms.                                                     |
-| `bathrooms`     | `INT`                | The number of bathrooms.                                                    |
-| `square_meters` | `INT`                | The total area of the property in square meters.                            |
-| `image_urls`    | `TEXT[]`             | An array of URLs pointing to the property images stored in Vercel Blob.       |
-| `created_at`    | `TIMESTAMPTZ`        | Timestamp of when the listing was created.                                  |
-| `updated_at`    | `TIMESTAMPTZ`        | Timestamp of the last update to the listing.                                |
-
----
-*This schema is the single source of truth for the database structure. Any migrations or changes should be reflected here.*
+The database connection string is configured via the `POSTGRES_PRISMA_URL` environment variable.

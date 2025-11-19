@@ -12,6 +12,14 @@ This is the official website for the GiorgioImmobiliare real estate agency, pres
 - **Image Storage**: [Vercel Blob](https://vercel.com/storage/blob)
 - **Deployment**: [Vercel](https://vercel.com/)
 
+## Documentation
+
+Detailed documentation for the project architecture, database, and API can be found in the `docs/` directory:
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Database Schema](docs/DATABASE.md)
+- [API Documentation](docs/API.md)
+
 ## Getting Started
 
 ### Prerequisites
@@ -51,7 +59,7 @@ This is the official website for the GiorgioImmobiliare real estate agency, pres
 
     # NextAuth.js
     AUTH_SECRET=
-    ADMIN_USERNAME=
+    ADMIN_EMAIL=
     ADMIN_PASSWORD=
     ```
 
