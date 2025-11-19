@@ -166,7 +166,7 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
 
         {/* Thumbnail Strip */}
         {images.length > 1 && (
-          <div className="mt-4 flex overflow-x-auto gap-2 pb-2 md:grid md:grid-cols-6 lg:grid-cols-8 md:overflow-visible scrollbar-hide">
+          <div className="p-4 flex overflow-x-auto gap-2 pb-2 md:grid md:grid-cols-6 lg:grid-cols-8 md:overflow-visible scrollbar-hide">
             {images.map((image, index) => (
               <button
                 key={index}

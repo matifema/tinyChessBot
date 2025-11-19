@@ -130,7 +130,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </div>
 
         {/* Image Gallery */}
-        <div className="mb-8 md:mb-12 -mx-4 md:mx-0">
+        <div className="mb-8 md:mb-12 mx-4 md:mx-0">
           <ImageGallery imageUrls={listing.imageUrls} />
         </div>
 
