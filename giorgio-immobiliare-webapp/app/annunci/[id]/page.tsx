@@ -57,11 +57,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-24 md:pb-12">
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600">
+          <nav className="flex items-center space-x-2 text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 sm:pb-0">
             <Link href="/" className="hover:text-[#0033cc]">
               Home
             </Link>
@@ -77,17 +77,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 leading-tight">
                 {listing.title}
               </h1>
               <div className="flex items-center text-gray-600">
                 <svg
-                  className="w-5 h-5 mr-2"
+                  className="w-5 h-5 mr-2 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -105,14 +105,14 @@ export default async function ListingPage({ params }: ListingPageProps) {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span className="text-lg">{listing.location}</span>
+                <span className="text-base md:text-lg">{listing.location}</span>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-4xl font-bold text-[#0033cc] mb-2">
+            <div className="flex flex-row md:flex-col justify-between items-center md:items-end border-t md:border-t-0 pt-4 md:pt-0 mt-2 md:mt-0">
+              <div className="text-3xl md:text-4xl font-bold text-[#0033cc] mb-0 md:mb-2">
                 {formatPrice(Number(listing.price))}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                 Rif. {listing.referenceNumber}
               </div>
             </div>
@@ -120,17 +120,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
           {/* Badges */}
           <div className="flex flex-wrap gap-2">
-            <span className="px-4 py-2 bg-[#0033cc] text-white rounded-full text-sm font-semibold">
+            <span className="px-4 py-2 bg-[#0033cc] text-white rounded-full text-sm font-semibold shadow-sm">
               {getStatusLabel(listing.status)}
             </span>
-            <span className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-semibold">
+            <span className="px-4 py-2 bg-white border border-gray-200 text-gray-800 rounded-full text-sm font-semibold shadow-sm">
               {getPropertyTypeLabel(listing.propertyType)}
             </span>
           </div>
         </div>
 
         {/* Image Gallery */}
-        <div className="mb-12">
+        <div className="mb-8 md:mb-12 -mx-4 md:mx-0">
           <ImageGallery imageUrls={listing.imageUrls} />
         </div>
 
@@ -138,30 +138,20 @@ export default async function ListingPage({ params }: ListingPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
-            <div className="bg-white rounded-xl shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Descrizione
-              </h2>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                {listing.description || "Nessuna descrizione disponibile."}
-              </p>
-            </div>
-
             {/* Features */}
             {(listing.bedrooms ||
               listing.bathrooms ||
               listing.squareMeters) && (
-              <div className="bg-white rounded-xl shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
                   Caratteristiche
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-4 md:gap-6">
                   {listing.bedrooms && (
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="flex flex-col md:flex-row items-center md:space-x-3 text-center md:text-left">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mb-2 md:mb-0">
                         <svg
-                          className="w-6 h-6 text-[#0033cc]"
+                          className="w-5 h-5 md:w-6 md:h-6 text-[#0033cc]"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -175,18 +165,20 @@ export default async function ListingPage({ params }: ListingPageProps) {
                         </svg>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl md:text-2xl font-bold text-gray-900">
                           {listing.bedrooms}
                         </div>
-                        <div className="text-sm text-gray-600">Camere</div>
+                        <div className="text-xs md:text-sm text-gray-600">
+                          Camere
+                        </div>
                       </div>
                     </div>
                   )}
                   {listing.bathrooms && (
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="flex flex-col md:flex-row items-center md:space-x-3 text-center md:text-left">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mb-2 md:mb-0">
                         <svg
-                          className="w-6 h-6 text-[#0033cc]"
+                          className="w-5 h-5 md:w-6 md:h-6 text-[#0033cc]"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -200,18 +192,20 @@ export default async function ListingPage({ params }: ListingPageProps) {
                         </svg>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl md:text-2xl font-bold text-gray-900">
                           {listing.bathrooms}
                         </div>
-                        <div className="text-sm text-gray-600">Bagni</div>
+                        <div className="text-xs md:text-sm text-gray-600">
+                          Bagni
+                        </div>
                       </div>
                     </div>
                   )}
                   {listing.squareMeters && (
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="flex flex-col md:flex-row items-center md:space-x-3 text-center md:text-left">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mb-2 md:mb-0">
                         <svg
-                          className="w-6 h-6 text-[#0033cc]"
+                          className="w-5 h-5 md:w-6 md:h-6 text-[#0033cc]"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -225,28 +219,40 @@ export default async function ListingPage({ params }: ListingPageProps) {
                         </svg>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl md:text-2xl font-bold text-gray-900">
                           {listing.squareMeters}
                         </div>
-                        <div className="text-sm text-gray-600">m²</div>
+                        <div className="text-xs md:text-sm text-gray-600">
+                          m²
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             )}
+
+            {/* Description */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+                Descrizione
+              </h2>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-base md:text-lg">
+                {listing.description || "Nessuna descrizione disponibile."}
+              </p>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-8 sticky top-24">
+          {/* Sidebar (Desktop) */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 sticky top-24">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Contattaci
               </h2>
               <div className="space-y-4">
                 <a
                   href="tel:3333496169"
-                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 bg-[#0033cc] text-white rounded-lg hover:bg-[#0055ff] transition-colors font-semibold shadow-lg"
+                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 bg-[#0033cc] text-white rounded-xl hover:bg-[#0055ff] transition-colors font-bold shadow-lg"
                 >
                   <svg
                     className="w-5 h-5"
@@ -265,7 +271,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 </a>
                 <a
                   href="mailto:giorgiotravagliati@gmail.com"
-                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors font-bold"
                 >
                   <svg
                     className="w-5 h-5"
@@ -338,10 +344,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </div>
 
         {/* Back Button */}
-        <div className="mt-12">
+        <div className="mt-8 md:mt-12 mb-8">
           <Link
             href="/annunci"
-            className="inline-flex items-center space-x-2 text-[#0033cc] hover:text-[#0055ff] font-semibold"
+            className="inline-flex items-center space-x-2 text-[#0033cc] hover:text-[#0055ff] font-semibold p-2 -ml-2"
           >
             <svg
               className="w-5 h-5"
@@ -358,6 +364,50 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </svg>
             <span>Torna agli annunci</span>
           </Link>
+        </div>
+      </div>
+
+      {/* Mobile Sticky Contact Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40 lg:hidden pb-safe">
+        <div className="flex gap-3 max-w-md mx-auto">
+          <a
+            href="tel:3333496169"
+            className="flex-1 flex items-center justify-center space-x-2 bg-[#0033cc] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              />
+            </svg>
+            <span>Chiama</span>
+          </a>
+          <a
+            href="mailto:giorgiotravagliati@gmail.com"
+            className="flex-1 flex items-center justify-center space-x-2 bg-gray-100 text-gray-900 py-3 rounded-xl font-bold active:scale-95 transition-transform"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+            <span>Email</span>
+          </a>
         </div>
       </div>
     </div>

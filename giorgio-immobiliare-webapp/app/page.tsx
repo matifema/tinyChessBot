@@ -24,13 +24,13 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* Featured Listings */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 md:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3">
               Annunci in Evidenza
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-base md:text-lg text-gray-600">
               Scopri le nostre migliori proposte immobiliari
             </p>
           </div>
@@ -43,15 +43,15 @@ export default async function HomePage() {
             </div>
           ) : (
             <>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {featuredListings.map((listing) => (
                   <PropertyCard key={listing.id} listing={listing} />
                 ))}
               </div>
-              <div className="text-center mt-12">
+              <div className="text-center mt-10 md:mt-12">
                 <Link
                   href="/annunci"
-                  className="inline-block px-8 py-4 bg-[#0033cc] text-white rounded-lg font-semibold hover:bg-[#0055ff] transition-colors shadow-lg"
+                  className="inline-block w-full sm:w-auto px-8 py-4 bg-[#0033cc] text-white rounded-xl font-bold hover:bg-[#0055ff] transition-colors shadow-lg active:scale-95 transform duration-150"
                 >
                   Vedi Tutti gli Annunci
                 </Link>
@@ -62,11 +62,11 @@ export default async function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div className="text-center p-4 md:p-6">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <svg
                   className="w-8 h-8 text-[#0033cc]"
                   fill="none"
@@ -81,15 +81,15 @@ export default async function HomePage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">
+              <h3 className="text-xl font-bold mb-2 text-gray-900">
                 Esperienza
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Oltre 35 anni di attività nel settore immobiliare
               </p>
             </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-4 md:p-6">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <svg
                   className="w-8 h-8 text-[#0033cc]"
                   fill="none"
@@ -104,15 +104,15 @@ export default async function HomePage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">
+              <h3 className="text-xl font-bold mb-2 text-gray-900">
                 Professionalità
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Team qualificato e sempre a tua disposizione
               </p>
             </div>
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-4 md:p-6">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <svg
                   className="w-8 h-8 text-[#0033cc]"
                   fill="none"
@@ -127,10 +127,10 @@ export default async function HomePage() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">
+              <h3 className="text-xl font-bold mb-2 text-gray-900">
                 Territorio
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 leading-relaxed">
                 Conoscenza approfondita della zona di Cerenova e Cerveteri
               </p>
             </div>
@@ -139,18 +139,18 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-[#0033cc] to-[#0055ff] text-white">
+      <section className="py-16 bg-gradient-to-br from-[#0033cc] to-[#0055ff] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-2xl md:text-4xl font-bold mb-6">
             Hai una Proprietà da Vendere o Affittare?
           </h2>
-          <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl mb-8 text-blue-100 max-w-2xl mx-auto leading-relaxed">
             Contattaci per una valutazione gratuita e senza impegno. Il nostro
             team è pronto ad aiutarti.
           </p>
           <a
             href="tel:3333496169"
-            className="inline-block px-8 py-4 bg-white text-[#0033cc] rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg"
+            className="inline-block w-full sm:w-auto px-8 py-4 bg-white text-[#0033cc] rounded-xl font-bold hover:bg-gray-50 transition-colors shadow-lg active:scale-95 transform duration-150"
           >
             Contattaci Ora
           </a>
