@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, TouchEvent } from "react";
 import Image from "next/image";
 
 interface ImageGalleryProps {
@@ -10,6 +10,13 @@ interface ImageGalleryProps {
 export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Touch state for swipe detection
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   const images =
     imageUrls && imageUrls.length > 0
@@ -32,27 +39,60 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
     setCurrentIndex(index);
   };
 
+  const onTouchStart = (e: TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    }
+    if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
   return (
     <>
       {/* Main Gallery */}
       <div className="relative w-full">
         {/* Main Image */}
-        <div className="relative w-full h-[400px] md:h-[600px] bg-gray-900 rounded-xl overflow-hidden">
+        <div
+          className="relative w-full h-[400px] md:h-[600px] bg-gray-900 rounded-xl overflow-hidden touch-pan-y"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <Image
             src={images[currentIndex]}
             alt={`Property Image ${currentIndex + 1}`}
             layout="fill"
             objectFit="cover"
-            className="cursor-pointer"
+            className="cursor-pointer select-none"
             onClick={() => setIsFullscreen(true)}
+            draggable={false}
           />
 
           {/* Navigation Arrows */}
           {images.length > 1 && (
             <>
               <button
-                onClick={goToPrevious}
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all backdrop-blur-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevious();
+                }}
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all backdrop-blur-sm hidden md:block"
                 aria-label="Previous image"
               >
                 <svg
@@ -70,8 +110,11 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
                 </svg>
               </button>
               <button
-                onClick={goToNext}
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all backdrop-blur-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNext();
+                }}
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all backdrop-blur-sm hidden md:block"
                 aria-label="Next image"
               >
                 <svg
@@ -92,13 +135,16 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
           )}
 
           {/* Image Counter */}
-          <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+          <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm pointer-events-none">
             {currentIndex + 1} / {images.length}
           </div>
 
           {/* Fullscreen Button */}
           <button
-            onClick={() => setIsFullscreen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreen(true);
+            }}
             className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-all backdrop-blur-sm"
             aria-label="Fullscreen"
           >
@@ -120,12 +166,12 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
 
         {/* Thumbnail Strip */}
         {images.length > 1 && (
-          <div className="mt-4 grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+          <div className="mt-4 flex overflow-x-auto gap-2 pb-2 md:grid md:grid-cols-6 lg:grid-cols-8 md:overflow-visible scrollbar-hide">
             {images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => goToImage(index)}
-                className={`relative h-20 rounded-lg overflow-hidden transition-all ${
+                className={`relative h-20 w-24 md:w-auto flex-shrink-0 rounded-lg overflow-hidden transition-all ${
                   currentIndex === index
                     ? "ring-4 ring-[#0033cc] scale-105"
                     : "opacity-60 hover:opacity-100"
@@ -136,6 +182,7 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
                   alt={`Thumbnail ${index + 1}`}
                   layout="fill"
                   objectFit="cover"
+                  draggable={false}
                 />
               </button>
             ))}
@@ -145,10 +192,15 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center touch-none"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-lg transition-all z-10"
+            className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-lg transition-all z-20"
             aria-label="Close fullscreen"
           >
             <svg
@@ -172,13 +224,18 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
               alt={`Property Image ${currentIndex + 1}`}
               layout="fill"
               objectFit="contain"
+              draggable={false}
+              className="select-none"
             />
 
             {images.length > 1 && (
               <>
                 <button
-                  onClick={goToPrevious}
-                  className="absolute left-4 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPrevious();
+                  }}
+                  className="absolute left-4 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm z-10 hidden md:block"
                   aria-label="Previous image"
                 >
                   <svg
@@ -196,8 +253,11 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
                   </svg>
                 </button>
                 <button
-                  onClick={goToNext}
-                  className="absolute right-4 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToNext();
+                  }}
+                  className="absolute right-4 bg-white/10 hover:bg-white/20 text-white p-4 rounded-full transition-all backdrop-blur-sm z-10 hidden md:block"
                   aria-label="Next image"
                 >
                   <svg
@@ -217,7 +277,7 @@ export default function ImageGallery({ imageUrls }: ImageGalleryProps) {
               </>
             )}
 
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm pointer-events-none">
               {currentIndex + 1} / {images.length}
             </div>
           </div>
