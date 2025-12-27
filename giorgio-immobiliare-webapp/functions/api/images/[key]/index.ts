@@ -9,16 +9,20 @@ function notFound() {
 export const onRequestGet: PagesFunction<Env> = async ({ env, params, request }) => {
   const keyParam = params.key;
 
-  // Cloudflare Pages uses "splat" params for nested paths; depending on routing,
-  // `params.key` can be a string or an array of path segments.
-  const key =
-    typeof keyParam === "string"
-      ? keyParam
-      : Array.isArray(keyParam)
-        ? keyParam.join("/")
-        : null;
+  // IMPORTANT:
+  // - In Pages Functions, a route like `/api/images/[key]` only captures ONE path segment.
+  // - Our R2 keys include slashes (e.g. `listings/<uuid>-file.png`).
+  // Therefore we expect the client to pass the key URL-encoded, with slashes encoded as `%2F`.
+  // We then decode it back to the original R2 key.
+  const encodedKey = typeof keyParam === "string" ? keyParam : null;
+  if (!encodedKey) return notFound();
 
-  if (!key) return notFound();
+  let key: string;
+  try {
+    key = decodeURIComponent(encodedKey);
+  } catch {
+    return notFound();
+  }
 
   const obj = await env.IMAGES.get(key);
   if (!obj) return notFound();
