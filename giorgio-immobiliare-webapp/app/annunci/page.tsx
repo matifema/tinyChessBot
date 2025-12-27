@@ -235,26 +235,29 @@ function AnnunciContent() {
 
             {/* Price Range */}
             <div className="lg:col-span-5">
-              <label className="block text-sm font-bold text-gray-700 mb-4">
+              <label className="block text-sm font-bold text-gray-700 mb-3">
                 Fascia di prezzo
               </label>
-              <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                <div className="flex items-center justify-between mb-4 text-sm font-bold text-[#0033cc]">
+
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between mb-3 text-sm font-bold text-[#0033cc] tabular-nums">
                   <span>{formatPrice(priceRange[0])}</span>
                   <span>{formatPrice(priceRange[1])}</span>
                 </div>
 
-                <div className="relative h-12 mb-2">
-                  <div className="relative w-full h-1 bg-gray-200 rounded-full top-3">
-                    <div
-                      className="absolute h-full bg-[#0033cc] rounded-full"
-                      style={{
-                        left: `${(priceRange[0] / maxPrice) * 100}%`,
-                        right: `${100 - (priceRange[1] / maxPrice) * 100}%`,
-                      }}
-                    />
-                  </div>
+                <div className="relative h-8">
+                  {/* Track */}
+                  <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full" />
+                  {/* Active range */}
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 h-1 bg-[#0033cc] rounded-full"
+                    style={{
+                      left: `${(priceRange[0] / maxPrice) * 100}%`,
+                      right: `${100 - (priceRange[1] / maxPrice) * 100}%`,
+                    }}
+                  />
 
+                  {/* Sliders */}
                   <input
                     type="range"
                     min="0"
@@ -268,10 +271,11 @@ function AnnunciContent() {
                       );
                       setPriceRange([val, priceRange[1]]);
                     }}
-                    className="absolute top-0 w-full h-6 appearance-none bg-transparent pointer-events-none z-20"
+                    className="absolute inset-0 w-full h-8 appearance-none bg-transparent pointer-events-none z-20"
                     style={{
                       zIndex: priceRange[0] > maxPrice - 100000 ? 30 : 20,
                     }}
+                    aria-label="Prezzo minimo"
                   />
                   <input
                     type="range"
@@ -286,8 +290,14 @@ function AnnunciContent() {
                       );
                       setPriceRange([priceRange[0], val]);
                     }}
-                    className="absolute top-0 w-full h-6 appearance-none bg-transparent pointer-events-none z-20"
+                    className="absolute inset-0 w-full h-8 appearance-none bg-transparent pointer-events-none z-20"
+                    aria-label="Prezzo massimo"
                   />
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-500 tabular-nums">
+                  <span>0</span>
+                  <span>{formatPrice(maxPrice)}</span>
                 </div>
               </div>
             </div>
@@ -387,31 +397,53 @@ function AnnunciContent() {
       )}
 
       <style jsx>{`
+        input[type="range"] {
+          -webkit-appearance: none;
+          appearance: none;
+          outline: none;
+        }
+
+        /* WebKit */
+        input[type="range"]::-webkit-slider-runnable-track {
+          height: 4px;
+          background: transparent;
+          border: none;
+        }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
           pointer-events: auto;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          border-radius: 9999px;
           background: #0033cc;
-          border: 3px solid white;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          border: 2px solid white;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
           cursor: pointer;
-          margin-top: -10px;
+          margin-top: -7px; /* centers thumb on 4px track */
+        }
+        input[type="range"]:focus-visible::-webkit-slider-thumb {
+          box-shadow: 0 0 0 4px rgba(0, 51, 204, 0.25);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-track {
+          height: 4px;
+          background: transparent;
+          border: none;
         }
         input[type="range"]::-moz-range-thumb {
           pointer-events: auto;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          border-radius: 9999px;
           background: #0033cc;
-          border: 3px solid white;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          border: 2px solid white;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
           cursor: pointer;
         }
-        input[type="range"]:focus::-webkit-slider-thumb {
-          box-shadow: 0 0 0 3px rgba(0, 51, 204, 0.3);
+        input[type="range"]:focus-visible::-moz-range-thumb {
+          box-shadow: 0 0 0 4px rgba(0, 51, 204, 0.25);
         }
       `}</style>
     </div>
