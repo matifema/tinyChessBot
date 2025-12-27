@@ -9,7 +9,7 @@ compatibility_date = "2025-12-27"
 # D1/R2 bindings are available to route handlers.
 
 d1_databases = [
-  { binding = "DB", database_name = "giorgio-immobiliare", database_id = "REPLACE_ME" }
+  { binding = "DB", database_name = "giorgio-immobiliare", database_id = "31fe5775-7b98-4ed3-a4c9-4d21df4ce10a" }
 ]
 
 r2_buckets = [
