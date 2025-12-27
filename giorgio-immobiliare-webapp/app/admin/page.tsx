@@ -53,6 +53,9 @@ export default function AdminPage() {
       try {
         const res = await fetch(`/api/listings/${id}`, {
           method: "DELETE",
+          headers: {
+            "x-admin-api-key": process.env.NEXT_PUBLIC_ADMIN_API_KEY ?? "",
+          },
         });
         if (!res.ok) {
           throw new Error("Failed to delete listing");

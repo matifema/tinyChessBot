@@ -2,9 +2,20 @@ import { mapListingRow } from "../../../lib/db";
 
 export interface Env {
   DB: D1Database;
+  ADMIN_API_KEY: string;
+}
+
+function unauthorized() {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const apiKey = request.headers.get("x-admin-api-key");
+  if (!env.ADMIN_API_KEY || apiKey !== env.ADMIN_API_KEY) return unauthorized();
+
   const body = (await request.json()) as Record<string, unknown>;
 
   const {
@@ -37,9 +48,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const now = new Date().toISOString();
 
   try {
+    const nextRef = await env.DB.prepare(
+      `SELECT COALESCE(MAX(reference_number), 0) + 1 AS next_ref FROM listings`
+    ).first<{ next_ref: number }>();
+
+    const referenceNumber = Number(nextRef?.next_ref ?? 1);
+
     await env.DB.prepare(
       `INSERT INTO listings (
         id,
+        reference_number,
         title,
         description,
         location,
@@ -52,10 +70,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         image_urls,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         id,
+        referenceNumber,
         String(title),
         description ? String(description) : null,
         String(location),

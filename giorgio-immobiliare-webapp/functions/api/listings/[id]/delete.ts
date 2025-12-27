@@ -1,8 +1,19 @@
 export interface Env {
   DB: D1Database;
+  ADMIN_API_KEY: string;
 }
 
-export const onRequestDelete: PagesFunction<Env> = async ({ params, env }) => {
+function unauthorized() {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
+}
+
+export const onRequestDelete: PagesFunction<Env> = async ({ request, params, env }) => {
+  const apiKey = request.headers.get("x-admin-api-key");
+  if (!env.ADMIN_API_KEY || apiKey !== env.ADMIN_API_KEY) return unauthorized();
+
   const id = typeof params.id === "string" ? params.id : null;
 
   if (!id) {

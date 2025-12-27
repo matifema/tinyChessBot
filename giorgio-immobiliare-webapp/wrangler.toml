@@ -15,3 +15,8 @@ d1_databases = [
 r2_buckets = [
   { binding = "IMAGES", bucket_name = "giorgio-immobiliare-images" }
 ]
+
+[vars]
+# Set this in Cloudflare Pages project settings for production.
+# For local dev, you can set it here or via `.env`.
+ADMIN_API_KEY = "CHANGE_ME"
