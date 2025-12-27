@@ -15,6 +15,17 @@ function sanitizeFilename(filename: string): string {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  // Handle CORS preflight (useful if this endpoint is ever called cross-origin).
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "access-control-allow-origin": "*",
+        "access-control-allow-methods": "POST, OPTIONS",
+        "access-control-allow-headers": "content-type, x-admin-api-key, x-admin-api_key",
+      },
+    });
+  }
   // Accept both header names to avoid client/env mismatches.
   const apiKey =
     request.headers.get("x-admin-api-key") ?? request.headers.get("x-admin-api_key");

@@ -97,13 +97,27 @@ export default function NewListingPage() {
             body: file,
           });
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.error || `Failed to upload ${file.name}`);
+          const rawText = await response.text();
+          let parsed: any = null;
+
+          try {
+            parsed = rawText ? JSON.parse(rawText) : null;
+          } catch {
+            // Keep parsed as null; we'll throw a more helpful error below.
           }
 
-          const newBlob = (await response.json()) as { url?: string };
-          if (!newBlob.url) throw new Error("Upload did not return a URL");
+          if (!response.ok) {
+            throw new Error(
+              parsed?.error ||
+                `Failed to upload ${file.name} (HTTP ${response.status}). Response: ${rawText || "<empty>"}`
+            );
+          }
+
+          const newBlob = parsed as { url?: string } | null;
+          if (!newBlob?.url) {
+            throw new Error(`Upload did not return a URL. Response: ${rawText || "<empty>"}`);
+          }
+
           uploadedImageUrls.push(newBlob.url);
         }
       }
@@ -123,8 +137,19 @@ export default function NewListingPage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to create listing");
+        const rawText = await res.text();
+        let parsed: any = null;
+
+        try {
+          parsed = rawText ? JSON.parse(rawText) : null;
+        } catch {
+          // ignore
+        }
+
+        throw new Error(
+          parsed?.error ||
+            `Failed to create listing (HTTP ${res.status}). Response: ${rawText || "<empty>"}`
+        );
       }
 
       router.push("/admin");
