@@ -1,0 +1,109 @@
+import { mapListingRow } from "../../../lib/db";
+
+export interface Env {
+  DB: D1Database;
+}
+
+export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const body = (await request.json()) as Record<string, unknown>;
+
+  const {
+    title,
+    description,
+    location,
+    price,
+    status,
+    propertyType,
+    bedrooms,
+    bathrooms,
+    squareMeters,
+    imageUrls,
+  } = body;
+
+  if (!title || !location || price === undefined || !propertyType || !status) {
+    return new Response(JSON.stringify({ error: "Missing required fields" }), {
+      status: 400,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
+  }
+
+  const normalizedImageUrls: string[] = Array.isArray(imageUrls)
+    ? (imageUrls as unknown[]).filter((x): x is string => typeof x === "string")
+    : typeof imageUrls === "string" && imageUrls.trim() !== ""
+      ? imageUrls.split(",").map((s) => s.trim()).filter(Boolean)
+      : [];
+
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+
+  try {
+    await env.DB.prepare(
+      `INSERT INTO listings (
+        id,
+        title,
+        description,
+        location,
+        price,
+        status,
+        property_type,
+        bedrooms,
+        bathrooms,
+        square_meters,
+        image_urls,
+        created_at,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+      .bind(
+        id,
+        String(title),
+        description ? String(description) : null,
+        String(location),
+        Number(price),
+        String(status),
+        String(propertyType),
+        bedrooms ? Number.parseInt(String(bedrooms), 10) : null,
+        bathrooms ? Number.parseInt(String(bathrooms), 10) : null,
+        squareMeters ? Number.parseInt(String(squareMeters), 10) : null,
+        JSON.stringify(normalizedImageUrls),
+        now,
+        now
+      )
+      .run();
+
+    const created = await env.DB.prepare(
+      `SELECT
+        id,
+        reference_number,
+        title,
+        description,
+        location,
+        price,
+        status,
+        property_type,
+        bedrooms,
+        bathrooms,
+        square_meters,
+        image_urls,
+        created_at,
+        updated_at
+      FROM listings
+      WHERE id = ?`
+    )
+      .bind(id)
+      .first<Record<string, unknown>>();
+
+    return new Response(JSON.stringify(created ? mapListingRow(created) : { id }), {
+      status: 201,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Failed to create listing:", error);
+
+    return new Response(JSON.stringify({ error: "Failed to create listing", debug: { message } }), {
+      status: 500,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
+  }
+};
