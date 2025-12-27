@@ -3,8 +3,8 @@ export interface Env {
   ADMIN_API_KEY: string;
 }
 
-function unauthorized() {
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+function unauthorized(debug?: Record<string, unknown>) {
+  return new Response(JSON.stringify({ error: "Unauthorized", debug }), {
     status: 401,
     headers: { "content-type": "application/json; charset=utf-8" },
   });
@@ -15,8 +15,25 @@ function sanitizeFilename(filename: string): string {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-  const apiKey = request.headers.get("x-admin-api-key");
-  if (!env.ADMIN_API_KEY || apiKey !== env.ADMIN_API_KEY) return unauthorized();
+  // Accept both header names to avoid client/env mismatches.
+  const apiKey =
+    request.headers.get("x-admin-api-key") ?? request.headers.get("x-admin-api_key");
+
+  // In Pages Functions, env vars come from:
+  // - Pages project settings (recommended), OR
+  // - wrangler.toml [vars] for local dev
+  //
+  // If you're seeing Unauthorized, it's usually:
+  // - header not being sent (empty shell var), OR
+  // - env.ADMIN_API_KEY not set in the Pages dev environment.
+  if (!env.ADMIN_API_KEY || !apiKey || apiKey !== env.ADMIN_API_KEY) {
+    return unauthorized({
+      hasEnvKey: Boolean(env.ADMIN_API_KEY),
+      hasHeaderKey: Boolean(apiKey),
+      headerKeyLength: apiKey?.length ?? 0,
+      envKeyLength: env.ADMIN_API_KEY?.length ?? 0,
+    });
+  }
 
   const { searchParams } = new URL(request.url);
   const filenameParam = searchParams.get("filename");
