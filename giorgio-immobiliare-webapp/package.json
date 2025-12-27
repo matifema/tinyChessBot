@@ -6,9 +6,6 @@
     "start": "next start",
     "lint": "eslint ."
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "next": "latest",
     "next-auth": "^4.24.13",
