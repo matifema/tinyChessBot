@@ -86,31 +86,39 @@ export default function NewListingPage() {
     setError(null);
 
     try {
-      const uploadedImageUrls = [];
+      const uploadedImageUrls: string[] = [];
       if (files.length > 0) {
         for (const file of files) {
           const response = await fetch(`/api/upload?filename=${file.name}`, {
             method: "POST",
+            headers: {
+              "x-admin-api-key": process.env.NEXT_PUBLIC_ADMIN_API_KEY ?? "",
+            },
             body: file,
           });
 
           if (!response.ok) {
-            throw new Error(`Failed to upload ${file.name}`);
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.error || `Failed to upload ${file.name}`);
           }
 
-          const newBlob = await response.json();
+          const newBlob = (await response.json()) as { url?: string };
+          if (!newBlob.url) throw new Error("Upload did not return a URL");
           uploadedImageUrls.push(newBlob.url);
         }
       }
 
       const listingData = {
         ...formData,
-        imageUrls: uploadedImageUrls.join(","),
+        imageUrls: uploadedImageUrls,
       };
 
       const res = await fetch("/api/listings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-api-key": process.env.NEXT_PUBLIC_ADMIN_API_KEY ?? "",
+        },
         body: JSON.stringify(listingData),
       });
 

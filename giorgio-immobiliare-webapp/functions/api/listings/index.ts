@@ -18,10 +18,28 @@ function getOrderBy(sortBy: string): { sql: string } {
   }
 }
 
+function parseStatusList(value: string | null): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function parseTake(value: string | null): number | null {
+  if (!value) return null;
+  const n = Number.parseInt(value, 10);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return Math.min(n, 100);
+}
+
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const { searchParams } = new URL(request.url);
+
   const propertyType = searchParams.get("propertyType");
   const sortBy = searchParams.get("sortBy") || "createdAt_desc";
+  const statusList = parseStatusList(searchParams.get("status"));
+  const take = parseTake(searchParams.get("take"));
 
   const orderBy = getOrderBy(sortBy);
 
@@ -43,17 +61,27 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   FROM listings`;
 
   try {
-    let stmt: D1PreparedStatement;
+    const whereParts: string[] = [];
+    const bindValues: unknown[] = [];
 
     if (propertyType && propertyType !== "all") {
-      stmt = env.DB.prepare(`${baseSelect} WHERE property_type = ? ORDER BY ${orderBy.sql}`).bind(
-        propertyType as PropertyType
-      );
-    } else {
-      stmt = env.DB.prepare(`${baseSelect} ORDER BY ${orderBy.sql}`);
+      whereParts.push(`property_type = ?`);
+      bindValues.push(propertyType as PropertyType);
     }
 
-    const result = await stmt.all<Record<string, unknown>>();
+    if (statusList.length > 0) {
+      whereParts.push(`status IN (${statusList.map(() => "?").join(", ")})`);
+      bindValues.push(...statusList);
+    }
+
+    const whereSql = whereParts.length > 0 ? ` WHERE ${whereParts.join(" AND ")}` : "";
+    const limitSql = take ? ` LIMIT ?` : "";
+
+    if (take) bindValues.push(take);
+
+    const sql = `${baseSelect}${whereSql} ORDER BY ${orderBy.sql}${limitSql}`;
+
+    const result = await env.DB.prepare(sql).bind(...bindValues).all<Record<string, unknown>>();
     const listings: Listing[] = (result.results ?? []).map(mapListingRow);
 
     return new Response(JSON.stringify(listings), {
