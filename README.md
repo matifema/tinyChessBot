@@ -6,11 +6,11 @@ This is the official website for the GiorgioImmobiliare real estate agency, pres
 
 - **Framework**: [Next.js](https://nextjs.org/) 16 (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Database**: [Vercel Postgres](https://vercel.com/storage/postgres)
+- **Database**: Cloudflare D1 (SQLite)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org/) (for Admin Panel)
 - **UI**: [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- **Image Storage**: [Vercel Blob](https://vercel.com/storage/blob)
-- **Deployment**: [Vercel](https://vercel.com/)
+- **Image Storage**: Cloudflare R2
+- **Deployment**: Cloudflare Pages
 
 ## Documentation
 
@@ -25,8 +25,11 @@ Detailed documentation for the project architecture, database, and API can be fo
 ### Prerequisites
 
 - Node.js (v18 or later)
-- npm, yarn, or pnpm
-- A Vercel account with a Postgres database and Blob store configured.
+- npm
+- A Cloudflare account with:
+  - Pages project
+  - D1 database
+  - R2 bucket
 
 ### Installation & Setup
 
@@ -41,29 +44,22 @@ Detailed documentation for the project architecture, database, and API can be fo
     npm install
     ```
 
-3.  **Set up environment variables:**
-    Create a `.env.local` file in the root of the project and add the necessary environment variables for your Vercel Postgres database, Vercel Blob storage, and NextAuth.js.
+3.  **Set up Cloudflare resources (local + deploy):**
+    - Create a D1 database and apply migrations (see commands below).
+    - Create an R2 bucket for images.
+    - Configure bindings in `giorgio-immobiliare-webapp/wrangler.toml` (D1 + R2).
+
+4.  **Set up environment variables:**
+    Create a `.env.local` file in the root of the project and add the necessary environment variables for NextAuth.js.
 
     ```sh
-    # Vercel Postgres
-    POSTGRES_URL=
-    POSTGRES_PRISMA_URL=
-    POSTGRES_URL_NON_POOLING=
-    POSTGRES_USER=
-    POSTGRES_HOST=
-    POSTGRES_PASSWORD=
-    POSTGRES_DATABASE=
-
-    # Vercel Blob
-    BLOB_READ_WRITE_TOKEN=
-
     # NextAuth.js
     AUTH_SECRET=
     ADMIN_EMAIL=
     ADMIN_PASSWORD=
     ```
 
-4.  **Run the development server:**
+5.  **Run the development server:**
     ```bash
     npm run dev
     ```
@@ -85,4 +81,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Deployment
 
-The application is designed for seamless deployment on [Vercel](https://vercel.com/). Simply connect your Git repository to a Vercel project. Vercel will automatically build and deploy the application, handling environment variables and integrations with Vercel Postgres and Blob.
+The application is designed for deployment on Cloudflare Pages. Configure your Pages project to build the `giorgio-immobiliare-webapp` directory and ensure D1 + R2 bindings are set in your Pages project settings (or via `wrangler.toml` if using Wrangler-based workflows).
