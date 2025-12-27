@@ -91,8 +91,7 @@ export default function HeroSection() {
               dei Tuoi Sogni
             </h1>
             <p className="text-lg md:text-2xl mb-8 text-blue-100 max-w-lg mx-auto md:mx-0">
-              Oltre 35 anni di esperienza nel settore immobiliare a Cerenova e
-              Cerveteri
+              Oltre 50 anni di esperienza nel settore immobiliare.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link

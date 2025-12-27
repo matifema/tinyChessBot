@@ -1,4 +1,0 @@
--- Prisma/Postgres legacy migration (Vercel Postgres).
--- This project has migrated to Cloudflare D1 (SQLite) and no longer uses Prisma migrations.
---
--- Kept for historical reference only.

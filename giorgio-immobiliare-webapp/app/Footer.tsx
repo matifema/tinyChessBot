@@ -11,7 +11,7 @@ export default function Footer() {
               </div>
               <div>
                 <div className="text-lg font-bold">Giorgio Immobiliare</div>
-                <div className="text-xs text-gray-400">Dal 1985</div>
+                <div className="text-xs text-gray-400">Dal 1975</div>
               </div>
             </div>
             <p className="text-gray-400 text-sm">
@@ -45,7 +45,7 @@ export default function Footer() {
                   />
                 </svg>
                 <div className="text-gray-300">
-                  <div>Via Oriolo</div>
+                  <div>Via Oriolo 3/C</div>
                   <div>Centro Commerciale I Portici</div>
                   <div>Cerenova - Cerveteri (Roma)</div>
                 </div>
@@ -101,7 +101,7 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-gray-300">
               <div className="flex justify-between">
                 <span>Lunedì - Mercoledì:</span>
-                <span className="font-medium">9:00 - 19:00</span>
+                <span className="font-medium">9:30 - 13:00 | 15:30 - 18:30</span>
               </div>
               <div className="flex justify-between">
                 <span>Giovedì:</span>
@@ -109,7 +109,7 @@ export default function Footer() {
               </div>
               <div className="flex justify-between">
                 <span>Venerdì - Sabato:</span>
-                <span className="font-medium">9:00 - 19:00</span>
+                <span className="font-medium">9:30 - 13:00 | 15:30 - 18:30</span>
               </div>
               <div className="flex justify-between">
                 <span>Domenica:</span>
