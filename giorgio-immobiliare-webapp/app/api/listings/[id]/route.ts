@@ -29,9 +29,7 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }>; env: Env }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
+  // Public GET: used by /annunci/[id]
   try {
     const { id } = await context.params;
 

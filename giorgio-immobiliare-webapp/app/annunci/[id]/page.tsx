@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import ImageGallery from "@/app/components/ImageGallery";
 import Link from "next/link";
-import { mapListingRow, type Listing } from "@/lib/db";
+import type { Listing } from "@/lib/db";
 
 interface ListingPageProps {
   params: {
@@ -17,18 +17,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
     notFound();
   }
 
-  // Public page: read directly from D1 (no auth)
-  // NOTE: On Cloudflare Pages, D1 is available via bindings in route handlers,
-  // but not directly in server components. For now, this page should be updated
-  // to fetch from a public API route (we'll add it next).
-  //
-  // Temporary: keep behavior by returning 404 until public API is added.
-  const listing: Listing | null = null;
+  const res = await fetch(`${process.env.NEXTAUTH_URL ?? ""}/api/listings/${id}`, {
+    // Ensure we always render fresh data for listings
+    cache: "no-store",
+  });
 
-  if (!listing) {
+  if (!res.ok) {
     notFound();
     return null;
   }
+
+  const listing = (await res.json()) as Listing;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("it-IT", {

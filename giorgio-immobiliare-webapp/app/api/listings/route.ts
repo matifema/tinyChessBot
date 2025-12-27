@@ -22,9 +22,7 @@ function getOrderBy(sortBy: string): { sql: string } {
 }
 
 export async function GET(request: Request, context: { env: Env }) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
+  // Public GET: used by /annunci
   const { searchParams } = new URL(request.url);
   const propertyType = searchParams.get("propertyType");
   const sortBy = searchParams.get("sortBy") || "createdAt_desc";
