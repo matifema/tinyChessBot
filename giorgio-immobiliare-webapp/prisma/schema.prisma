@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("D1_DATABASE_URL")
 }
 
 enum ListingStatus {
@@ -24,18 +24,18 @@ enum PropertyType {
 }
 
 model Listing {
-  id              String        @id @default(uuid())
-  referenceNumber Int           @unique @default(autoincrement()) @map("reference_number")
+  id              String        @id
+  referenceNumber Int           @unique @map("reference_number")
   title           String
   description     String?
   location        String
-  price           Decimal
+  price           Float
   status          ListingStatus @default(for_sale)
   propertyType    PropertyType  @map("property_type")
   bedrooms        Int?
   bathrooms       Int?
   squareMeters    Int?          @map("square_meters")
-  imageUrls       String[]      @map("image_urls")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
+  imageUrls       String        @map("image_urls") // JSON string in D1
+  createdAt       DateTime      @map("created_at")
+  updatedAt       DateTime      @map("updated_at")
 }

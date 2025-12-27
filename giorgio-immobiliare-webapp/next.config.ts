@@ -2,14 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "n4nyiv7vhpxymcm8.public.blob.vercel-storage.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
+    // If you expose R2 via a public domain, add it here.
+    // For now, we keep the old pattern removed to avoid broken config.
+    remotePatterns: [],
   },
 };
 

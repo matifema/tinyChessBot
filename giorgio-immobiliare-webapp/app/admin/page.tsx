@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Listing } from "@prisma/client";
 import Link from "next/link";
+import type { Listing } from "@/lib/db";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();

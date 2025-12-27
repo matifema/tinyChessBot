@@ -1,7 +1,7 @@
-import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ImageGallery from "@/app/components/ImageGallery";
 import Link from "next/link";
+import { mapListingRow, type Listing } from "@/lib/db";
 
 interface ListingPageProps {
   params: {
@@ -17,9 +17,13 @@ export default async function ListingPage({ params }: ListingPageProps) {
     notFound();
   }
 
-  const listing = await prisma.listing.findUnique({
-    where: { id },
-  });
+  // Public page: read directly from D1 (no auth)
+  // NOTE: On Cloudflare Pages, D1 is available via bindings in route handlers,
+  // but not directly in server components. For now, this page should be updated
+  // to fetch from a public API route (we'll add it next).
+  //
+  // Temporary: keep behavior by returning 404 until public API is added.
+  const listing: Listing | null = null;
 
   if (!listing) {
     notFound();

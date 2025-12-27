@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import PropertyCard from "../components/PropertyCard";
-import { Listing } from "@prisma/client";
+import type { Listing } from "@/lib/db";
 
 // --- Helper Components ---
 

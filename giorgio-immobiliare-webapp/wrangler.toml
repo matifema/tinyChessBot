@@ -1,0 +1,20 @@
+name = "giorgio-immobiliare-webapp"
+compatibility_date = "2025-12-27"
+
+# Cloudflare Pages will provide these bindings to your Next.js route handlers
+# (App Router / Route Handlers) when deployed on Pages.
+#
+# IMPORTANT:
+# - Replace database_name / database_id with your actual D1 values.
+# - Replace bucket_name with your actual R2 bucket name.
+#
+# If you already bound these in the Pages dashboard, keep the binding names
+# consistent with what we use in code: DB and IMAGES.
+
+d1_databases = [
+  { binding = "DB", database_name = "giorgio-immobiliare", database_id = "REPLACE_ME" }
+]
+
+r2_buckets = [
+  { binding = "IMAGES", bucket_name = "giorgio-immobiliare-images" }
+]
