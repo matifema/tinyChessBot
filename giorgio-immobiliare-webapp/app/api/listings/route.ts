@@ -21,6 +21,24 @@ function getOrderBy(sortBy: string): { sql: string } {
   }
 }
 
+function withDebug(error: unknown, request: Request, context: { env: Env }) {
+  const message = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack : undefined;
+
+  return NextResponse.json(
+    {
+      error: "Failed to fetch listings",
+      debug: {
+        message,
+        stack,
+        url: request.url,
+        hasDBBinding: Boolean(context?.env?.DB),
+      },
+    },
+    { status: 500 }
+  );
+}
+
 export async function GET(request: Request, context: { env: Env }) {
   // Public GET: used by /annunci
   const { searchParams } = new URL(request.url);
@@ -30,6 +48,10 @@ export async function GET(request: Request, context: { env: Env }) {
   const orderBy = getOrderBy(sortBy);
 
   try {
+    // Quick sanity check: does the table exist?
+    // If this fails with "no such table: listings", you need to run the D1 schema migration locally.
+    await context.env.DB.prepare(`SELECT 1 FROM listings LIMIT 1`).all();
+
     let stmt = context.env.DB.prepare(
       `SELECT
         id,
@@ -97,7 +119,7 @@ export async function GET(request: Request, context: { env: Env }) {
     return NextResponse.json(listings);
   } catch (error) {
     console.error("Failed to fetch listings:", error);
-    return NextResponse.json({ error: "Failed to fetch listings" }, { status: 500 });
+    return withDebug(error, request, context);
   }
 }
 
@@ -192,6 +214,7 @@ export async function POST(request: Request, context: { env: Env }) {
     return NextResponse.json(created ? mapListingRow(created) : { id }, { status: 201 });
   } catch (error) {
     console.error("Failed to create listing:", error);
-    return NextResponse.json({ error: "Failed to create listing" }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: "Failed to create listing", debug: { message } }, { status: 500 });
   }
 }
