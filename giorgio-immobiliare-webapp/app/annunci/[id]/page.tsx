@@ -316,7 +316,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                       />
                     </svg>
                     <div>
-                      <div>Via Oriolo</div>
+                      <div>Via Oriolo 3/C</div>
                       <div>Centro Commerciale I Portici</div>
                       <div>Cerenova - Cerveteri (Roma)</div>
                     </div>
