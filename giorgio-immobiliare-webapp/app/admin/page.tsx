@@ -26,13 +26,22 @@ export default function AdminPage() {
   const fetchListings = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const res = await fetch(
-        `/api/listings?propertyType=${propertyTypeFilter}&sortBy=${sortBy}`
-      );
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:8788";
+      const url = new URL("/api/listings", baseUrl);
+      url.searchParams.set("propertyType", propertyTypeFilter);
+      url.searchParams.set("sortBy", sortBy);
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+
       if (!res.ok) {
-        throw new Error("Failed to fetch listings");
+        const rawText = await res.text();
+        throw new Error(
+          `Failed to fetch listings (HTTP ${res.status}). Response: ${rawText || "<empty>"}`
+        );
       }
+
       const data = await res.json();
       setListings(data);
     } catch (err: any) {
