@@ -39,87 +39,100 @@ function withDebug(error: unknown, request: Request, context: { env: Env }) {
   );
 }
 
-export async function GET(request: Request, context: { env: Env }) {
+export async function GET(request: Request) {
   // Public GET: used by /annunci
+  //
+  // IMPORTANT (local dev):
+  // - When running `next dev` directly, Cloudflare bindings (D1/R2) are NOT available.
+  // - When running through `wrangler pages dev`, Next route handlers still run in Node,
+  //   so `context.env` is not reliably provided.
+  //
+  // Therefore, for local development we use a D1 URL from env and query via fetch.
+  // In production on Cloudflare Pages, you should switch to a Pages Functions data layer
+  // or a Worker that exposes the DB. For now, this unblocks local dev and keeps the API working.
   const { searchParams } = new URL(request.url);
   const propertyType = searchParams.get("propertyType");
   const sortBy = searchParams.get("sortBy") || "createdAt_desc";
 
   const orderBy = getOrderBy(sortBy);
 
-  try {
-    // Quick sanity check: does the table exist?
-    // If this fails with "no such table: listings", you need to run the D1 schema migration locally.
-    await context.env.DB.prepare(`SELECT 1 FROM listings LIMIT 1`).all();
+  const d1Url = process.env.D1_DATABASE_URL;
+  const d1Token = process.env.D1_DATABASE_TOKEN;
 
-    let stmt = context.env.DB.prepare(
-      `SELECT
-        id,
-        reference_number,
-        title,
-        description,
-        location,
-        price,
-        status,
-        property_type,
-        bedrooms,
-        bathrooms,
-        square_meters,
-        image_urls,
-        created_at,
-        updated_at
-      FROM listings`
+  if (!d1Url || !d1Token) {
+    return NextResponse.json(
+      {
+        error: "D1 is not configured for local dev.",
+        debug: {
+          missing: [
+            !d1Url ? "D1_DATABASE_URL" : null,
+            !d1Token ? "D1_DATABASE_TOKEN" : null,
+          ].filter(Boolean),
+        },
+      },
+      { status: 500 }
     );
+  }
 
-    if (propertyType && propertyType !== "all") {
-      stmt = context.env.DB.prepare(
-        `SELECT
-          id,
-          reference_number,
-          title,
-          description,
-          location,
-          price,
-          status,
-          property_type,
-          bedrooms,
-          bathrooms,
-          square_meters,
-          image_urls,
-          created_at,
-          updated_at
-        FROM listings
-        WHERE property_type = ?
-        ORDER BY ${orderBy.sql}`
-      ).bind(propertyType as PropertyType);
-    } else {
-      stmt = context.env.DB.prepare(
-        `SELECT
-          id,
-          reference_number,
-          title,
-          description,
-          location,
-          price,
-          status,
-          property_type,
-          bedrooms,
-          bathrooms,
-          square_meters,
-          image_urls,
-          created_at,
-          updated_at
-        FROM listings
-        ORDER BY ${orderBy.sql}`
+  const whereClause =
+    propertyType && propertyType !== "all" ? `WHERE property_type = ?1` : "";
+  const params =
+    propertyType && propertyType !== "all" ? [propertyType as PropertyType] : [];
+
+  const sql = `SELECT
+      id,
+      reference_number,
+      title,
+      description,
+      location,
+      price,
+      status,
+      property_type,
+      bedrooms,
+      bathrooms,
+      square_meters,
+      image_urls,
+      created_at,
+      updated_at
+    FROM listings
+    ${whereClause}
+    ORDER BY ${orderBy.sql}`;
+
+  try {
+    const res = await fetch(d1Url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${d1Token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sql, params }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return NextResponse.json(
+        { error: "Failed to query D1", debug: { status: res.status, text } },
+        { status: 500 }
       );
     }
 
-    const result = await stmt.all<Record<string, unknown>>();
-    const listings: Listing[] = (result.results ?? []).map(mapListingRow);
+    const json = (await res.json()) as {
+      result?: Array<{ results?: Record<string, unknown>[] }>;
+      errors?: unknown;
+    };
+
+    const rows = json.result?.[0]?.results ?? [];
+    const listings: Listing[] = rows.map(mapListingRow);
     return NextResponse.json(listings);
   } catch (error) {
     console.error("Failed to fetch listings:", error);
-    return withDebug(error, request, context);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch listings",
+        debug: { message: error instanceof Error ? error.message : String(error) },
+      },
+      { status: 500 }
+    );
   }
 }
 
