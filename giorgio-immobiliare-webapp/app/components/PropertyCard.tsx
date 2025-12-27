@@ -1,4 +1,4 @@
-import { Listing } from "@prisma/client";
+import type { Listing } from "@/lib/db";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,7 +8,7 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ listing }: PropertyCardProps) {
   const firstImage =
-    listing.imageUrls[0] ||
+    listing.imageUrls?.[0] ||
     "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80";
 
   const formatPrice = (price: number) => {

@@ -45,7 +45,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     httpMetadata: { contentType },
   });
 
-  return new Response(JSON.stringify({ key, contentType }), {
+  // Return a URL that the frontend can render directly.
+  // We serve images via a Pages Function that streams from R2.
+  const url = new URL(request.url);
+  const publicUrl = `${url.origin}/api/images/${encodeURIComponent(key)}`;
+
+  return new Response(JSON.stringify({ key, url: publicUrl, contentType }), {
     status: 200,
     headers: { "content-type": "application/json; charset=utf-8" },
   });
