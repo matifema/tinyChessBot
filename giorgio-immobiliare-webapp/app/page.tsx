@@ -15,7 +15,7 @@ export default async function HomePage() {
     orderBy: {
       createdAt: "desc",
     },
-    take: 6,
+    take: 3,
   });
 
   return (
