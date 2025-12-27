@@ -19,10 +19,10 @@ export const authOptions: NextAuthOptions = {
         ) {
           // Any object returned will be saved in `user` property of the JWT
           return { id: "1", name: "Admin", email: credentials?.email };
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
         }
+
+        // If you return null then an error will be displayed advising the user to check their details.
+        return null;
       },
     }),
   ],
