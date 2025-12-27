@@ -19,4 +19,4 @@ r2_buckets = [
 [vars]
 # Set this in Cloudflare Pages project settings for production.
 # For local dev, you can set it here or via `.env`.
-ADMIN_API_KEY = "CHANGE_ME"
+ADMIN_API_KEY = "4hmyCNRHxfMhY29dEuYBKL5GI69FXyYHo7uEuYHDH/kFiH8VkjzW++nfEHBYMRZb89z5Yr6kd6Ndf1IjVj59IQ"

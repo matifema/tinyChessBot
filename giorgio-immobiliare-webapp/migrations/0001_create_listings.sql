@@ -1,5 +1,5 @@
 -- D1 / SQLite schema for listings
--- Mirrors the Prisma Listing model, with these differences:
+-- Mirrors the previous Listing model, with these differences:
 -- - image_urls is stored as JSON text (TEXT) instead of TEXT[]
 -- - enums are stored as TEXT with CHECK constraints
 -- - reference_number is assigned in application code (SELECT MAX + 1) to avoid
