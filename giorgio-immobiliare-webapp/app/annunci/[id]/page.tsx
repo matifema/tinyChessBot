@@ -17,7 +17,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
     notFound();
   }
 
-  const res = await fetch(`${process.env.NEXTAUTH_URL ?? ""}/api/listings/${id}`, {
+  // Use a relative URL so it works on Cloudflare Pages without relying on NEXTAUTH_URL.
+  const res = await fetch(`/api/listings/${id}`, {
     // Ensure we always render fresh data for listings
     cache: "no-store",
   });
