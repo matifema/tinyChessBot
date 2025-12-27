@@ -85,7 +85,7 @@ export default async function HomePage() {
                 Esperienza
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Oltre 35 anni di attività nel settore immobiliare
+                Oltre 50 anni di attività nel settore immobiliare
               </p>
             </div>
             <div className="text-center p-4 md:p-6">
