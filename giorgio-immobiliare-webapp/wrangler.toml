@@ -7,6 +7,10 @@ compatibility_date = "2025-12-27"
 #
 # That runs the Next dev server and proxies through the Workers runtime so
 # D1/R2 bindings are available to route handlers.
+#
+# IMPORTANT:
+# D1 tables are not created automatically. You must apply migrations to the
+# local D1 database (and production) before calling /api/listings.
 
 d1_databases = [
   { binding = "DB", database_name = "giorgio-immobiliare", database_id = "31fe5775-7b98-4ed3-a4c9-4d21df4ce10a" }

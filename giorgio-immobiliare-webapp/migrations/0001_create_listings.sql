@@ -8,6 +8,11 @@
 
 PRAGMA foreign_keys = ON;
 
+-- Ensure the schema is applied to the correct D1 database by running:
+--   npx wrangler d1 execute giorgio-immobiliare --local --file=giorgio-immobiliare-webapp/migrations/0001_create_listings.sql
+-- and for production:
+--   npx wrangler d1 execute giorgio-immobiliare --remote --file=giorgio-immobiliare-webapp/migrations/0001_create_listings.sql
+
 CREATE TABLE IF NOT EXISTS listings (
   id TEXT PRIMARY KEY NOT NULL,
   reference_number INTEGER NOT NULL UNIQUE,
