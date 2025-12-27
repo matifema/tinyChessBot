@@ -1,22 +1,26 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
 import PropertyCard from "@/app/components/PropertyCard";
 import HeroSection from "@/app/components/HeroSection";
+import type { Listing } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+async function fetchFeaturedListings(): Promise<Listing[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/listings?status=for_sale,for_rent&sortBy=createdAt_desc&take=3`,
+    { cache: "no-store" }
+  );
+
+  if (!res.ok) {
+    // Fail soft: homepage should still render even if listings API is down.
+    return [];
+  }
+
+  return res.json();
+}
+
 export default async function HomePage() {
-  const featuredListings = await prisma.listing.findMany({
-    where: {
-      status: {
-        in: ["for_sale", "for_rent"],
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 3,
-  });
+  const featuredListings = await fetchFeaturedListings();
 
   return (
     <div className="min-h-screen">
